@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome", // or "chrome"
+      "request": "launch",
+      "name": "Launch Edge against localhost",
+      "url": "http://localhost:5500", // <-- CHANGE this port to match your Live Server port
+      "webRoot": "${workspaceFolder}"
+    }
+  ]
+}
