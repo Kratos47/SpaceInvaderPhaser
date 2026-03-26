@@ -1,6 +1,7 @@
 import { SpriteBase } from "./SpriteBase.js";
 import { activeScene } from "../Globals.js";
 import { Texture } from "../Texture/Texture.js";
+import { denormalizeToHex } from "../Globals.js";
 
 /*
  * Assumptions:
@@ -177,7 +178,11 @@ export class GameSprite extends SpriteBase {
 // Swaps
 // ------------------------------------------------------------
 SwapColor(myColor) {
-    this.poSprite.setTint(myColor);
+    // This ensures that whether you pass a hex code 
+    // or an {r, g, b} object, it converts correctly.
+    const hexColor = denormalizeToHex(myColor);
+    
+    this.poSprite.setTint(hexColor);
 }
 
     //   SwapTextureRect(rect) {

@@ -12,10 +12,12 @@ import { BoxSpriteMan } from "./Sprite/BoxSpriteManager.js";
 import { BoxSprite } from "./Sprite/BoxSprite.js";
 
 import { setActiveScene } from './Globals.js';
-import { denormalizeToHex } from "../Globals.js";
 
 import { SpriteBatchMan } from "./SpriteBatch/SpriteBatchMan.js";
 import { SpriteBatch } from "./SpriteBatch/SpriteBatch.js";
+
+import { TimerMan } from "./Timer/TimerMan.js";
+import { TimeEvent } from "./Timer/TimeEvent.js";
 
 export default class Game extends Phaser.Scene {
 
@@ -44,6 +46,8 @@ export default class Game extends Phaser.Scene {
         BoxSpriteMan.Create(3, 1);
 
         SpriteBatchMan.Create(3, 1);
+
+        TimerMan.Create(3, 1);
 
         this.redSpeed = 2.0;
 
@@ -106,6 +110,8 @@ export default class Game extends Phaser.Scene {
 
         this.pSB_Aliens.Attach(GameSprite.Name.Alien_Crab);
 
+        this.pSB_Aliens.Attach(GameSprite.Name.Alien_Octopus);
+
         this.pSB_Stitch.Attach(GameSprite.Name.Stitch);
 
 
@@ -116,87 +122,103 @@ export default class Game extends Phaser.Scene {
         });
 
 
+        // -------------------------------------------------------------------------
+        // PROTOTYPE LOGIC (Timer-Based)
+        // -------------------------------------------------------------------------
+
+        // --- Boxes Color Cycle ---
+        const boxLogic = () => {
+            this.count3++;
+            this.pBoxSprite1 = BoxSpriteMan.Find(BoxSprite.Name.Box1);
+
+            if (this.count3 == 100) {
+                this.pBoxSprite1.SwapColor({ r: 1, g: 0, b: 0 });
+            }
+            else if (this.count3 == 200) {
+                this.pBoxSprite1.SwapColor({ r: 0, g: 1, b: 0 });
+            }
+            else if (this.count3 == 300) {
+                this.pBoxSprite1.SwapColor({ r: 0, g: 0, b: 1 });
+                this.count3 = 0;
+            }
+            this.pBoxSprite1.Update();
+
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, boxLogic, 0.016);
+        };
+
+        // --- Red Bird Bounce ---
+        const birdLogic = () => {
+            if (this.pRedBird.x > this.scale.width || this.pRedBird.x < 0.0) {
+                this.redSpeed *= -1.0;
+            }
+            this.pRedBird.x += this.redSpeed;
+            this.pRedBird.Update();
+
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, birdLogic, 0.016);
+        };
+
+        // --- Alien Crab Spiral ---
+        const crabLogic = () => {
+            this.AlienAngle += 0.1;
+            this.AlienPosX += 2.0;
+            if (this.AlienPosX > 800.0) this.AlienPosX = 0.0;
+
+            this.AlienPosY += 1.0;
+            if (this.AlienPosY > 600.0) this.AlienPosY = 0.0;
+
+            this.pAlien_Crab.x = this.AlienPosX;
+            this.pAlien_Crab.y = this.AlienPosY;
+            this.pAlien_Crab.angle = this.AlienAngle;
+            this.pAlien_Crab.Update();
+
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, crabLogic, 0.016);
+        };
+
+        // --- Alien Octopus Color Shift ---
+        const octopusLogic = () => {
+            this.blue += 0.001;
+            this.red -= 0.002;
+
+            if (this.red <= 0.0) {
+                this.red = 1.0;
+            }
+
+            // Passing the raw RGB values - SwapColor will denormalize them
+            this.pAlien_Octopus.SwapColor({ r: this.red, g: 0, b: this.blue });
+            this.pAlien_Octopus.Update();
+
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, octopusLogic, 0.016);
+        };
+
+        // --- Stitch Scaling & Flipping ---
+        const stitchLogic = () => {
+            if (this.pStitch.sx > 2 || this.pStitch.sx < 0.0) {
+                this.pStitch_Speed *= -1.0;
+                this.pStitch.sy *= -1.0; // Vertical Flip
+            }
+            this.pStitch.sx += this.pStitch_Speed;
+            this.pStitch.Update();
+
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, stitchLogic, 0.016);
+        };
+
+        // -------------------------------------------------------------------------
+        // INITIAL TRIGGER
+        // -------------------------------------------------------------------------
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, boxLogic, 0.016);
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, birdLogic, 0.016);
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, crabLogic, 0.016);
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, octopusLogic, 0.016);
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, stitchLogic, 0.016);
+
+
         console.log("===== Manager Tests End =====");
     }
 
     update(time, delta) {
 
-        // Add your update below this line: ----------------------------
-        //--------------------------------------------------------
-        // Boxes
-        //--------------------------------------------------------
-        this.count3++;
-        this.pBoxSprite1 = BoxSpriteMan.Find(BoxSprite.Name.Box1);
-        if (this.count3 == 100) {
-            this.pBoxSprite1.SwapColor({ r: 1, g: 0, b: 0 });
-        }
-        else if (this.count3 == 200) {
-            this.pBoxSprite1.SwapColor({ r: 0, g: 1, b: 0 });
-        }
-        else if (this.count3 == 300) {
-            this.pBoxSprite1.SwapColor({ r: 0, g: 0, b: 1 });
-            this.count3 = 0;
-        }
-        this.pBoxSprite1.Update();
+        TimerMan.Update(time / 1000);
 
-        //console.log("===== Game Update =====");
-        // Game loop placeholder
-        if (this.pRedBird.x > this.scale.width || this.pRedBird.x < 0.0) {
-            this.redSpeed *= -1.0;
-        }
-        this.pRedBird.x += this.redSpeed;
-        this.pRedBird.Update();
-
-        //--------------------------------------------------------
-        // Alien - Angles,position
-        //--------------------------------------------------------
-
-        this.AlienAngle += 0.1;
-        this.AlienPosX += 2.0;
-        if (this.AlienPosX > 800.0)
-            this.AlienPosX = 0.0;
-        this.AlienPosY += 1.0;
-        if (this.AlienPosY > 600.0)
-            this.AlienPosY = 0.0;
-
-        this.pAlien_Crab.x = this.AlienPosX;
-        this.pAlien_Crab.y = this.AlienPosY;
-        this.pAlien_Crab.angle = this.AlienAngle;
-
-        this.pAlien_Crab.Update();
-
-
-        // 1. Increment values (using your logic)
-        this.blue += 0.001;
-        this.red -= 0.002;
-
-        if (this.red <= 0.0) {
-            this.red = 1.0;
-        }
-
-        // 2. Wrap values to ensure they stay in the 0.0 - 1.0 range if blue grows too large
-        let b = Math.min(this.blue, 1.0);
-
-        // 3. Convert floats (0-1) to integers (0-255)
-        let rInt = Math.floor(this.red * 255);
-        let bInt = Math.floor(b * 255);
-
-        // 4. Create the Hex color
-        let hexColor = Phaser.Display.Color.GetColor(rInt, 0, bInt);
-
-        // 5. Apply to sprite
-        this.pAlien_Octopus.SwapColor(hexColor)
-
-
-        //--------------------------------------------------------
-        // Stitch
-        //--------------------------------------------------------
-        if (this.pStitch.sx > 2 || this.pStitch.sx < 0.0) {
-            this.pStitch_Speed *= -1.0;
-            this.pStitch.sy *= -1.0;
-        }
-        this.pStitch.sx += this.pStitch_Speed;
-        this.pStitch.Update();
     }
 }
 
