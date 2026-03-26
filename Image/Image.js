@@ -1,113 +1,67 @@
-// Image.js
 import { DLink } from "../Manager/DLink.js";
-import { Texture } from "../Texture/Texture.js";
 import { activeScene } from "../Globals.js";
 
-/*
- * NOTE:
- * Azul.Rect is assumed to exist globally, exactly like Azul.Texture
- */
-
 export class Image extends DLink {
-    // ------------------------------------------------------------
-    // Enum replacement
-    // ------------------------------------------------------------
     static Name = Object.freeze({
+        // Original Prototype Names
         RedBird: "RedBird",
         YellowBird: "YellowBird",
         GreenBird: "GreenBird",
         WhiteBird: "WhiteBird",
-
         Alien_Crab: "Alien_Crab",
         Alien_Octopus: "Alien_Octopus",
         Alien_Squid: "Alien_Squid",
         Alien_UFO: "Alien_UFO",
-
         Stitch: "Stitch",
-
-        RedGhost: "RedGhost",
-        PinkGhost: "PinkGhost",
-        BlueGhost: "BlueGhost",
-        OrangeGhost: "OrangeGhost",
-        MsPacMan: "MsPacMan",
-        PowerUpGhost: "PowerUpGhost",
-        Prezel: "Prezel",
-
+        // C# Architecture Names
+        Default: "Default",
+        OctopusA: "OctopusA",
+        OctopusB: "OctopusB",
+        AlienA: "AlienA",
+        AlienB: "AlienB",
+        SquidA: "SquidA",
+        SquidB: "SquidB",
+        NullObject: "NullObject",
         Uninitialized: "Uninitialized",
     });
 
-    // ------------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------------
     constructor() {
-        super(); // base()
-
-        //this.poRect = new Azul.Rect();
-        //console.assert(this.poRect !== null);
-
-        this.clear();
+        super();
+        this.poRect = { x: 0, y: 0, width: 0, height: 0 };
+        this.privClear();
     }
 
-    // ------------------------------------------------------------
-    // Methods/
-    // ------------------------------------------------------------
-    Set(name, pTexture, x, y, width, height,sourceIndex = 0) {
-        // Copy the data over
+    Set(name, pTexture, x, y, width, height, sourceIndex = 0) {
         this.name = name;
-
         console.assert(pTexture !== null);
         this.pTexture = pTexture;
 
-        //this.poRect.set(x, y, width, height);
-        let image = activeScene.textures.get(pTexture.name);
+        // Phaser Texture integration
+        let phaserTex = activeScene.textures.get(pTexture.name);
+        phaserTex.add(name, sourceIndex, x, y, width, height);
 
-        //Second Argument sourceIndex	0	The index of the Image Source 
-        //to use (usually 0 if the texture only has one image/file).
-        image.add(name, sourceIndex, x, y, width, height); //
+        this.poRect.x = x;
+        this.poRect.y = y;
+        this.poRect.width = width;
+        this.poRect.height = height;
     }
 
-    // C# "new Clear()"
-    Clear() {
+    privClear() {
         this.pTexture = null;
         this.name = Image.Name.Uninitialized;
-        this.poRect.clear();
+        if (this.poRect) {
+            this.poRect.x = 0;
+            this.poRect.y = 0;
+            this.poRect.width = 0;
+            this.poRect.height = 0;
+        }
     }
 
     Wash() {
-        this.clear();
+        this.clear(); // DLink clear
+        this.privClear();
     }
 
-    Dump() {
-        console.log(`   Name: ${this.name} (${this})`);
-        console.log(
-            `      Rect: [${this.poRect.x} ${this.poRect.y} ${this.poRect.width} ${this.poRect.height}]`
-        );
-
-        if (this.pTexture !== null) {
-            console.log(`   Texture: ${this.pTexture.name}`);
-        } else {
-            console.log("   Texture: null");
-        }
-
-        if (this.pNext === null) {
-            console.log("      next: null");
-        } else {
-            const pTmp = this.pNext;
-            console.log(`      next: ${pTmp.name} (${pTmp})`);
-        }
-
-        if (this.pPrev === null) {
-            console.log("      prev: null");
-        } else {
-            const pTmp = this.pPrev;
-            console.log(`      prev: ${pTmp.name} (${pTmp})`);
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Data
-    // ------------------------------------------------------------
-    // name
-    // poRect
-    // pTexture
+    SetName(inName) { this.name = inName; }
+    GetName() { return this.name; }
 }

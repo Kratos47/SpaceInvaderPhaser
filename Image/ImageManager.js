@@ -1,116 +1,55 @@
-// ImageMan.js
-
 import { Manager } from "../Manager/Manager.js";
 import { Image } from "./Image.js";
 import { TextureMan } from "../Texture/TextureManager.js";
+import { Texture } from "../Texture/Texture.js";
 
 export class ImageMan extends Manager {
-  // ------------------------------------------------------------
-  // Constructor
-  // ------------------------------------------------------------
-  constructor(reserveNum = 3, reserveGrow = 1) {
-    super(); // base()
+    static pInstance = null;
 
-    this.baseInitialize(reserveNum, reserveGrow);
-
-    // derived data
-    this.poNodeCompare = new Image();
-  }
-
-  // ------------------------------------------------------------
-  // Static Methods
-  // ------------------------------------------------------------
-  static Create(reserveNum = 3, reserveGrow = 1) {
-    console.assert(reserveNum > 0);
-    console.assert(reserveGrow > 0);
-    console.assert(ImageMan.pInstance === null);
-
-    if (ImageMan.pInstance === null) {
-      ImageMan.pInstance = new ImageMan(reserveNum, reserveGrow);
+    constructor(reserveNum = 3, reserveGrow = 1) {
+        super();
+        this.baseInitialize(reserveNum, reserveGrow);
+        this.poNodeCompare = new Image();
     }
-  }
 
-  static Destroy() {
-    const pMan = ImageMan.privGetInstance();
-    console.assert(pMan !== null);
+    static Create(reserveNum = 3, reserveGrow = 1) {
+        if (ImageMan.pInstance === null) {
+            ImageMan.pInstance = new ImageMan(reserveNum, reserveGrow);
+        }
 
-    // intentionally empty (same as C#)
-  }
+        // Initialize default objects exactly like ImageMan.cs
+        ImageMan.Add(Image.Name.NullObject, Texture.Name.Default, 0, 0, 128, 128);
+        ImageMan.Add(Image.Name.Default, Texture.Name.Default, 0, 0, 128, 128);
+    }
 
-  static Add(imageName, textureName, x, y, width, height, sourceIndex = 0) {
-    const pMan = ImageMan.privGetInstance();
-    console.assert(pMan !== null);
+    static Add(imageName, textureName, x, y, width, height) {
+        const pMan = ImageMan.privGetInstance();
+        const pNode = pMan.baseAdd();
 
-    const pNode = pMan.baseAdd();
-    console.assert(pNode !== null);
+        let pTexture = TextureMan.Find(textureName);
+        
+        // Safety Fallback to prevent null reference errors
+        if (pTexture === null) {
+            pTexture = TextureMan.Find(Texture.Name.Default);
+        }
 
-    const pTexture = TextureMan.Find(textureName);
-    console.assert(pTexture !== null);
+        pNode.Set(imageName, pTexture, x, y, width, height);
+        return pNode;
+    }
 
-    pNode.Set(imageName, pTexture,  x, y, width, height, sourceIndex,);
-    return pNode;
-  }
+    static Find(name) {
+        const pMan = ImageMan.privGetInstance();
+        pMan.poNodeCompare.SetName(name);
+        return pMan.baseFind(pMan.poNodeCompare);
+    }
 
-  static Find(name) {
-    const pMan = ImageMan.privGetInstance();
-    console.assert(pMan !== null);
+    static privGetInstance() {
+        console.assert(ImageMan.pInstance !== null);
+        return ImageMan.pInstance;
+    }
 
-    pMan.poNodeCompare.name = name;
-    return pMan.baseFind(pMan.poNodeCompare);
-  }
-
-  static Remove(pNode) {
-    const pMan = ImageMan.privGetInstance();
-    console.assert(pMan !== null);
-    console.assert(pNode !== null);
-
-    pMan.baseRemove(pNode);
-  }
-
-  static Dump() {
-    const pMan = ImageMan.privGetInstance();
-    console.assert(pMan !== null);
-
-    pMan.baseDump();
-  }
-
-  // ------------------------------------------------------------
-  // Override abstract methods
-  // ------------------------------------------------------------
-  derivedCreateNode() {
-    const pNode = new Image();
-    console.assert(pNode !== null);
-    return pNode;
-  }
-
-  derivedCompare(pLinkA, pLinkB) {
-    console.assert(pLinkA !== null);
-    console.assert(pLinkB !== null);
-
-    return pLinkA.name === pLinkB.name;
-  }
-
-  derivedWash(pLink) {
-    console.assert(pLink !== null);
-    pLink.Wash();
-  }
-
-  derivedDumpNode(pLink) {
-    console.assert(pLink !== null);
-    pLink.Dump();
-  }
-
-  // ------------------------------------------------------------
-  // Private methods
-  // ------------------------------------------------------------
-  static privGetInstance() {
-    console.assert(ImageMan.pInstance !== null);
-    return ImageMan.pInstance;
-  }
-
-  // ------------------------------------------------------------
-  // Data
-  // ------------------------------------------------------------
-  static pInstance = null;
-  // poNodeCompare
+    derivedCreateNode() { return new Image(); }
+    derivedCompare(pA, pB) { return pA.GetName() === pB.GetName(); }
+    derivedWash(pLink) { pLink.Wash(); }
+    derivedDumpNode(pLink) { pLink.Dump(); }
 }
