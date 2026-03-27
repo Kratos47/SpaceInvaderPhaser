@@ -1,24 +1,18 @@
-// DLink.js
+/**
+ * @file DLink.js
+ * @description Base class for doubly-linked list nodes used by Managers.
+ */
 
 export class DLink {
-  // ------------------------------------------------------------
-  // Constructor (protected in C#)
-  // ------------------------------------------------------------
-  constructor() {
-    this.clear();
-  }
+    constructor() {
+        this.clear();
+    }
 
-  // ------------------------------------------------------------
-  // Clear()
-  // ------------------------------------------------------------
-  clear() {
-    this.pNext = null;
-    this.pPrev = null;
-  }
-
-  // ------------------------------------------------------------
-  // Data
-  // ------------------------------------------------------------
-  // pNext
-  // pPrev
+    /**
+     * Resets the linked list pointers.
+     */
+    clear() {
+        this.pNext = null;
+        this.pPrev = null;
+    }
 }
