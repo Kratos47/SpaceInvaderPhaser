@@ -1,3 +1,7 @@
+/**
+ * @file TimeEvent.js
+ * @description A scheduled event executed by the TimerMan.
+ */
 import { DLink } from "../Manager/DLink.js";
 import { TimerMan } from "./TimerMan.js";
 
@@ -17,21 +21,17 @@ export class TimeEvent extends DLink {
 
     Set(eventName, pCommand, deltaTimeToTrigger) {
         console.assert(pCommand !== null);
-
         this.name = eventName;
         this.pCommand = pCommand;
         this.deltaTime = deltaTimeToTrigger;
-
-        // Set the trigger time based on TimerMan's current time
         this.triggerTime = TimerMan.GetCurrTime() + deltaTimeToTrigger;
     }
 
     Process() {
+        // Supports both raw functions (prototyping) and formal Command classes
         if (typeof this.pCommand === 'function') {
-            // If it's just a function, run it! For Protyping puposes so I do not have to make a whole new class
             this.pCommand(this.deltaTime);
         } else if (this.pCommand && typeof this.pCommand.Execute === 'function') {
-            // If it's a formal Command class, call Execute
             this.pCommand.Execute(this.deltaTime);
         }
     }
@@ -44,18 +44,13 @@ export class TimeEvent extends DLink {
     }
 
     Wash() {
-        this.clear(); // DLink clear
+        this.clear(); 
         this.Clear();
     }
 
-    SetName(inName) {
-        this.name = inName;
-    }
-
-    GetName() {
-        return this.name;
-    }
-
+    SetName(inName) { this.name = inName; }
+    GetName() { return this.name; }
+    
     Dump() {
         console.log(`   Name: ${this.name} (${this})`);
         console.log(`      Command: ${this.pCommand}`);

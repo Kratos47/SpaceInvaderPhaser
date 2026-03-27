@@ -1,3 +1,7 @@
+/**
+ * @file TimerMan.js
+ * @description Manages a timeline of TimeEvents, firing them when their triggerTime is reached.
+ */
 import { Manager } from "../Manager/Manager.js";
 import { TimeEvent } from "./TimeEvent.js";
 
@@ -24,9 +28,7 @@ export class TimerMan extends Manager {
             pMan.privFillReservedPool(pMan.mDeltaGrow);
         }
         
-        // Using Manager.RESERVE to avoid hardcoding strings
         const pNode = Manager.privPullFromFront(pMan, Manager.RESERVE);
-
         pNode.Wash(); 
         pNode.Set(timeName, pCommand, deltaTimeToTrigger);
 
@@ -37,10 +39,12 @@ export class TimerMan extends Manager {
         const pNewHead = pMan.SortedInsert(pNode, pHead);
 
         pMan.baseSetActive(pNewHead);
-
         return pNode;
     }
 
+    /**
+     * Inserts an event into the active timeline sorted by triggerTime.
+     */
     SortedInsert(pNode, pHead) {
         if (pHead === null || pNode.triggerTime < pHead.triggerTime) {
             pNode.pNext = pHead;
@@ -50,7 +54,7 @@ export class TimerMan extends Manager {
 
         let curr = pHead;
         while (curr.pNext !== null && curr.pNext.triggerTime <= pNode.triggerTime) {
-            curr = (curr.pNext);
+            curr = curr.pNext;
         }
 
         pNode.pNext = curr.pNext;
@@ -70,10 +74,8 @@ export class TimerMan extends Manager {
 
         while (pEvent !== null && pMan.mCurrTime >= pEvent.triggerTime) {
             pNextEvent = pEvent.pNext;
-
             pEvent.Process();
             pMan.baseRemove(pEvent);
-
             pEvent = pNextEvent;
         }
     }
