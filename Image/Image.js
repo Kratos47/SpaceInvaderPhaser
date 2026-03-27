@@ -1,9 +1,13 @@
+/**
+ * @file Image.js
+ * @description Defines a specific rectangular region (uv coordinates) within a Texture.
+ */
+
 import { DLink } from "../Manager/DLink.js";
 import { activeScene } from "../Globals.js";
 
 export class Image extends DLink {
     static Name = Object.freeze({
-        // Original Prototype Names
         RedBird: "RedBird",
         YellowBird: "YellowBird",
         GreenBird: "GreenBird",
@@ -13,7 +17,6 @@ export class Image extends DLink {
         Alien_Squid: "Alien_Squid",
         Alien_UFO: "Alien_UFO",
         Stitch: "Stitch",
-        // C# Architecture Names
         Default: "Default",
         OctopusA: "OctopusA",
         OctopusB: "OctopusB",
@@ -33,10 +36,9 @@ export class Image extends DLink {
 
     Set(name, pTexture, x, y, width, height, sourceIndex = 0) {
         this.name = name;
-        console.assert(pTexture !== null);
+        console.assert(pTexture !== null, "Image must have a valid Texture");
         this.pTexture = pTexture;
 
-        // Phaser Texture integration
         let phaserTex = activeScene.textures.get(pTexture.name);
         phaserTex.add(name, sourceIndex, x, y, width, height);
 
@@ -58,7 +60,7 @@ export class Image extends DLink {
     }
 
     Wash() {
-        this.clear(); // DLink clear
+        this.clear(); 
         this.privClear();
     }
 
