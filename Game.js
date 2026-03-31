@@ -9,13 +9,17 @@ import { ImageMan } from "./Image/ImageManager.js";
 import { Image } from "./Image/Image.js";
 import { GameSpriteMan } from "./Sprite/GameSpriteManager.js";
 import { GameSprite } from "./Sprite/GameSprite.js";
-import { BoxSpriteMan } from "./Sprite/BoxSpriteManager.js";
-import { BoxSprite } from "./Sprite/BoxSprite.js";
 import { SpriteBatchMan } from "./SpriteBatch/SpriteBatchMan.js";
 import { SpriteBatch } from "./SpriteBatch/SpriteBatch.js";
 import { TimerMan } from "./Timer/TimerMan.js";
-import { TimeEvent } from "./Timer/TimeEvent.js";
-import { setActiveScene, denormalizeToHex } from './Globals.js';
+import { TimeEvent } from "./Timer/TimeEvent.js"; // RESTORED FOR METRONOME
+import { setActiveScene } from './Globals.js';
+
+// --- Grid System Imports ---
+import { GameObjectMan } from "./GameObject/GameObjectMan.js";
+import { GameObject } from "./GameObject/GameObject.js";
+import { AlienCategory } from "./GameObject/Aliens/AlienCategory.js";
+import { AlienFactory } from "./GameObject/AlienFactory.js";
 
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -30,139 +34,143 @@ export default class Game extends Phaser.Scene {
         TextureMan.Create(1, 1);
         ImageMan.Create(5, 2);
         GameSpriteMan.Create(4, 2);
-        BoxSpriteMan.Create(3, 1);
         SpriteBatchMan.Create(3, 1);
         TimerMan.Create(3, 1);
-
-        // Prototype Variables
-        this.redSpeed = 2.0;
-        this.AlienPosX = 0.0;
-        this.AlienPosY = 0.0;
-        this.AlienAngle = 0.0;
-        this.blue = 0.0;
-        this.red = 0.0;
-        this.pStitch_Speed = 0.1;
-        this.count3 = 0;
+        GameObjectMan.Create(3, 1);
     }
 
     preload() {
         this.load.image(Texture.psDefaultPhaserTexture, "./assets/HotPink.png");
-        TextureMan.Add(Texture.Name.Aliens, "assets/kindpng_4810910.png");
-        TextureMan.Add(Texture.Name.Birds, "assets/Birds.png");
-        TextureMan.Add(Texture.Name.PacMan, "assets/PacMan.png");
-        TextureMan.Add(Texture.Name.Stitch, "assets/stitch.png");
+        TextureMan.Add(Texture.Name.SpaceInvaders, "assets/kindpng_4810910.png");
     }
 
     create() {
-        // --- Setup Images & Sprites ---
-        ImageMan.Add(Image.Name.Alien_Crab, Texture.Name.Aliens, 118, 27, 95, 70);
-        this.pAlien_Crab = GameSpriteMan.Add(GameSprite.Name.Alien_Crab, Image.Name.Alien_Crab, Texture.Name.Aliens, 200, 200, 1, 1);
+        // 1. Load Textures & Images
+        TextureMan.Add(Texture.Name.SpaceInvaders, Texture.Name.SpaceInvaders);
 
-        ImageMan.Add(Image.Name.RedBird, Texture.Name.Birds, 47, 41, 48, 46);
-        this.pRedBird = GameSpriteMan.Add(GameSprite.Name.RedBird, Image.Name.RedBird, Texture.Name.Birds, 150, 300, 1, 1);
+        // Your ImageMan mappings
+        ImageMan.Add(Image.Name.OctopusA, Texture.Name.SpaceInvaders, 554, 26, 104, 70); 
+        ImageMan.Add(Image.Name.OctopusB, Texture.Name.SpaceInvaders, 554, 26, 104, 70); 
+        ImageMan.Add(Image.Name.AlienA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
+        ImageMan.Add(Image.Name.AlienB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
+        ImageMan.Add(Image.Name.SquidA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
+        ImageMan.Add(Image.Name.SquidB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
 
-        ImageMan.Add(Image.Name.Alien_Octopus, Texture.Name.Aliens, 554, 26, 104, 70);
-        this.pAlien_Octopus = GameSpriteMan.Add(GameSprite.Name.Alien_Octopus, Image.Name.Alien_Octopus, Texture.Name.Aliens, 650, 150, 1, 1);
+        // Slice using Texture.Name.SpaceInvaders
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.OctopusA, 0, 554, 26, 104, 70);
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.OctopusB, 0, 554, 26, 104, 70);
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.AlienA, 0, 118, 27, 95, 70);
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.AlienB, 0, 118, 27, 95, 70);
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.SquidA, 0, 118, 27, 95, 70);
+        this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.SquidB, 0, 118, 27, 95, 70);
 
-        ImageMan.Add(Image.Name.Stitch, Texture.Name.Stitch, 0, 0, 300, 410);
-        this.pStitch = GameSpriteMan.Add(GameSprite.Name.Stitch, Image.Name.Stitch, Texture.Name.Stitch, 200, 250, 0.5, 0.5);
+        // 2. Base Sprites (Correct 33, 45, 49 pixel widths!)
+        GameSpriteMan.Add(GameSprite.Name.SquidA, Image.Name.SquidA, Texture.Name.SpaceInvaders, 100, 532, 33, 33);
+        GameSpriteMan.Add(GameSprite.Name.AlienA, Image.Name.AlienA, Texture.Name.SpaceInvaders, 100, 466, 45, 33);
+        GameSpriteMan.Add(GameSprite.Name.OctopusA, Image.Name.OctopusA, Texture.Name.SpaceInvaders, 100, 400, 49, 33);
 
-        this.color = { r: 1, g: 1, b: 1 };
-        BoxSpriteMan.Add(BoxSprite.Name.Box1, 200.0, 300.0, 150.0, 150.0, this.color);
-
-        // --- Setup Sprite Batches ---
-        this.pSB_Aliens = SpriteBatchMan.Add(SpriteBatch.Name.Aliens, 4);
-        this.pSB_Boxes = SpriteBatchMan.Add(SpriteBatch.Name.Boxes, 3);
-        this.pSB_AngryBirds = SpriteBatchMan.Add(SpriteBatch.Name.AngryBirds, 2);
-        this.pSB_Stitch = SpriteBatchMan.Add(SpriteBatch.Name.Stitch, 1);
-
-        this.pSB_AngryBirds.Attach(GameSprite.Name.RedBird);
-        this.pSB_Boxes.Attach(BoxSprite.Name.Box1);
-        this.pSB_Aliens.Attach(GameSprite.Name.Alien_Crab);
-        this.pSB_Aliens.Attach(GameSprite.Name.Alien_Octopus);
-        this.pSB_Stitch.Attach(GameSprite.Name.Stitch);
-
-        // Engine Manual Draw Sync
-        this.events.on('postupdate', () => {
-            SpriteBatchMan.Draw();
+        // 3. Phaser Native Animations 
+        this.anims.create({
+            key: 'anim_squid',
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidB }
+            ],
+            frameRate: 2, 
+            repeat: -1    
         });
 
-        // -------------------------------------------------------------------------
-        // PROTOTYPE LOGIC (Timer-Based)
-        // -------------------------------------------------------------------------
-        const boxLogic = () => {
-            this.count3++;
-            this.pBoxSprite1 = BoxSpriteMan.Find(BoxSprite.Name.Box1);
+        this.anims.create({
+            key: 'anim_alien',
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienB }
+            ],
+            frameRate: 2,
+            repeat: -1
+        });
 
-            if (this.count3 == 100) this.pBoxSprite1.SwapColor({ r: 1, g: 0, b: 0 });
-            else if (this.count3 == 200) this.pBoxSprite1.SwapColor({ r: 0, g: 1, b: 0 });
-            else if (this.count3 == 300) { this.pBoxSprite1.SwapColor({ r: 0, g: 0, b: 1 }); this.count3 = 0; }
+        this.anims.create({
+            key: 'anim_octopus',
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusB }
+            ],
+            frameRate: 2,
+            repeat: -1
+        });
+
+        // Trigger animations
+        GameSpriteMan.Find(GameSprite.Name.SquidA).PlayAnimation('anim_squid');
+        GameSpriteMan.Find(GameSprite.Name.AlienA).PlayAnimation('anim_alien');
+        GameSpriteMan.Find(GameSprite.Name.OctopusA).PlayAnimation('anim_octopus');
+
+ // 4. Create SpriteBatch
+        const pSB_Aliens = SpriteBatchMan.Add(SpriteBatch.Name.Aliens, 2);
+
+        // 5. Build the Alien Grid using the Factory
+        const AF = new AlienFactory(SpriteBatch.Name.Aliens);
+        this.pGrid = AF.Create(GameObject.Name.AlienGrid, AlienCategory.Type.Grid);
+
+        let pFirstColumn = null;
+
+        for (let i = 0; i < 11; i++) {
+            const colName = GameObject.Name[`Column_${i}`];
+            const pColumn = AF.Create(colName, AlienCategory.Type.Column);
+            this.pGrid.Add(pColumn);
+
+            if (pFirstColumn === null) pFirstColumn = pColumn;
+        }
+
+        // Populate the Columns
+        let currCol = pFirstColumn;
+        for (let i = 0; i < 11; i++) {
+            const xOffset = 50.0 + (66 * i);
+
+            currCol.Add(AF.Create(GameObject.Name.Squid, AlienCategory.Type.Squid, xOffset, 100.0));
+            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 150.0));
+            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 200.0));
+            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 250.0));
+            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 300.0));
+
+            currCol = currCol.pNext;
+        }
+
+        // Push initial coordinates to proxies so they don't spawn at (0,0) for the first half-second
+        GameObjectMan.Update();
+
+        // 6. THE METRONOME: Create a recurring timer to step the grid
+        const marchGrid = () => {
+            // 1. Check bounds and drop down if needed
+            this.pGrid.Move(); 
             
-            this.pBoxSprite1.Update();
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, boxLogic, 0.016);
+            // 2. Add deltaX and push coordinates to visual ProxySprites
+            GameObjectMan.Update(); 
+
+            // 3. Re-add itself to the timer (0.5 seconds)
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, marchGrid, 0.5); 
         };
 
-        const birdLogic = () => {
-            if (this.pRedBird.x > this.scale.width || this.pRedBird.x < 0.0) this.redSpeed *= -1.0;
-            this.pRedBird.x += this.redSpeed;
-            this.pRedBird.Update();
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, birdLogic, 0.016);
-        };
+        // Kick off the first metronome tick
+        TimerMan.Add(TimeEvent.Name.SpriteAnimation, marchGrid, 0.5);
 
-        const crabLogic = () => {
-            this.AlienAngle += 0.1;
-            this.AlienPosX += 2.0;
-            if (this.AlienPosX > 800.0) this.AlienPosX = 0.0;
-
-            this.AlienPosY += 1.0;
-            if (this.AlienPosY > 600.0) this.AlienPosY = 0.0;
-
-            this.pAlien_Crab.x = this.AlienPosX;
-            this.pAlien_Crab.y = this.AlienPosY;
-            this.pAlien_Crab.angle = this.AlienAngle;
-            this.pAlien_Crab.Update();
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, crabLogic, 0.016);
-        };
-
-        const octopusLogic = () => {
-            this.blue += 0.001;
-            this.red -= 0.002;
-            if (this.red <= 0.0) this.red = 1.0;
-
-            this.pAlien_Octopus.SwapColor({ r: this.red, g: 0, b: this.blue });
-            this.pAlien_Octopus.Update();
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, octopusLogic, 0.016);
-        };
-
-        const stitchLogic = () => {
-            if (this.pStitch.sx > 2 || this.pStitch.sx < 0.0) {
-                this.pStitch_Speed *= -1.0;
-                this.pStitch.sy *= -1.0; 
-            }
-            this.pStitch.sx += this.pStitch_Speed;
-            this.pStitch.Update();
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, stitchLogic, 0.016);
-        };
-
-        // --- Initial Triggers ---
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, boxLogic, 0.016);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, birdLogic, 0.016);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, crabLogic, 0.016);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, octopusLogic, 0.016);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, stitchLogic, 0.016);
-
-        console.log("===== Manager Tests End =====");
+        console.log("===== Grid Setup Complete =====");
     }
 
     update(time, delta) {
+        // 1. Fire off timer events (Animations and the Grid Metronome tick)
         TimerMan.Update(time / 1000);
+
+        // 2. Sync the ProxySprites to the Phaser Scene Graph natively 60 times a second
+        // (They will sit perfectly still until the Metronome changes their coordinates!)
+        SpriteBatchMan.Draw();
     }
 }
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 896,
+    height: 1024,
     scene: [Game]
 };
 

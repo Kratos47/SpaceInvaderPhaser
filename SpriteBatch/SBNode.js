@@ -15,16 +15,20 @@ export class SBNode extends SBNode_Link {
         this.pSpriteBase = null;
     }
 
-    Set(name) {
-        // Try GameSprite first
-        this.pSpriteBase = GameSpriteMan.Find(name);
-
-        if (this.pSpriteBase === null) {
-            // Try BoxSprite if not a standard GameSprite
-            this.pSpriteBase = BoxSpriteMan.Find(name);
+    Set(spriteParam) {
+        // If a string is passed, look it up in the Managers
+        if (typeof spriteParam === 'string') {
+            this.pSpriteBase = GameSpriteMan.Find(spriteParam);
+            if (this.pSpriteBase === null) {
+                this.pSpriteBase = BoxSpriteMan.Find(spriteParam);
+            }
+        } 
+        // If an object is passed (like a ProxySprite), attach it directly!
+        else {
+            this.pSpriteBase = spriteParam;
         }
 
-        console.assert(this.pSpriteBase !== null, `SBNode failed to find sprite: ${name}`);
+        console.assert(this.pSpriteBase !== null, `SBNode failed to set sprite`);
     }
 
     Wash() {

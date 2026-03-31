@@ -23,7 +23,6 @@ export class SpriteBatch extends SpriteBatch_Link {
         this.name = SpriteBatch.Name.Uninitialized;
         this.priority = 0;
         this.pSBNodeMan = new SBNodeMan();
-        console.assert(this.pSBNodeMan !== null);
     }
 
     Set(name, priority, reserveNum = 3, reserveGrow = 1) {
@@ -32,7 +31,7 @@ export class SpriteBatch extends SpriteBatch_Link {
         this.pSBNodeMan.Set(name, reserveNum, reserveGrow);
     }
 
-    Attach(name) { return this.pSBNodeMan.Attach(name); }
+    Attach(spriteParam) { return this.pSBNodeMan.Attach(spriteParam); }
     Wash() {}
     Dump() {}
     

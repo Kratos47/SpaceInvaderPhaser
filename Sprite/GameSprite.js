@@ -9,22 +9,10 @@ import { Texture } from "../Texture/Texture.js";
 
 export class GameSprite extends SpriteBase {
     static Name = Object.freeze({
-        RedBird: "RedBird",
-        YellowBird: "YellowBird",
-        GreenBird: "GreenBird",
-        WhiteBird: "WhiteBird",
-        Alien_Crab: "Alien_Crab",
-        Alien_Octopus: "Alien_Octopus",
-        Alien_Squid: "Alien_Squid",
-        Alien_UFO: "Alien_UFO",
-        Stitch: "Stitch",
-        RedGhost: "RedGhost",
-        PinkGhost: "PinkGhost",
-        BlueGhost: "BlueGhost",
-        OrangeGhost: "OrangeGhost",
-        MsPacMan: "MsPacMan",
-        PowerUpGhost: "PowerUpGhost",
-        Prezel: "Prezel",
+        SquidA: "SquidA",
+        AlienA: "AlienA",
+        OctopusA: "OctopusA",
+        NullObject: "NullObject",
         Uninitialized: "Uninitialized"
     });
 
@@ -34,9 +22,11 @@ export class GameSprite extends SpriteBase {
 
         this.poSprite = activeScene.make.sprite({
             key: Texture.Name.Default,
-            add: false 
+            add: true // MUST BE TRUE so Phaser's animation clock ticks!
         });
-        console.assert(this.poSprite !== null, "Phaser Sprite creation failed");
+        
+        // Hide the base sprite! We only use it for data and animation frames
+        this.poSprite.setVisible(false); 
 
         this.x = this.poSprite.x;
         this.y = this.poSprite.y;
@@ -46,18 +36,17 @@ export class GameSprite extends SpriteBase {
     }
 
     Set(name, pImage, textureName, x, y, width, height, myColor = null) {
-        console.assert(pImage !== null, "GameSprite must have a valid Image");
+        console.assert(pImage !== null);
         
         this.pImage = pImage;
         this.name = name;
 
         this.poSprite.setPosition(x, y);
-        this.poSprite.setScale(width, height);
+        // CRITICAL FIX: setDisplaySize forces exact pixel size. setScale(33) would make it 33x bigger!
+        this.poSprite.setDisplaySize(width, height);
         this.poSprite.setTexture(textureName, pImage.name);
 
-        if (myColor !== null) {
-            this.SwapColor(myColor);
-        }
+        if (myColor !== null) this.SwapColor(myColor);
 
         this.x = x;
         this.y = y;
@@ -69,11 +58,6 @@ export class GameSprite extends SpriteBase {
     privClear() {
         this.pImage = null;
         this.name = GameSprite.Name.Uninitialized;
-        this.x = 0.0;
-        this.y = 0.0;
-        this.sx = 1.0;
-        this.sy = 1.0;
-        this.angle = 0.0;
     }
 
     Wash() {
@@ -83,22 +67,15 @@ export class GameSprite extends SpriteBase {
     Update() {
         this.poSprite.x = this.x;
         this.poSprite.y = this.y;
-        this.poSprite.scaleX = this.sx;
-        this.poSprite.scaleY = this.sy;
         this.poSprite.angle = this.angle;
-        this.poSprite.update();
     }
 
     Render() {
-        const renderer = activeScene.sys.renderer;
-        const camera = activeScene.cameras.main;
-        const pipeline = renderer.pipelines.get('MultiPipeline');
+        // Handled natively by ProxySprite in Phaser
+    }
 
-        pipeline.batchSprite(
-            this.poSprite,
-            camera,
-            this.poSprite.parentContainer ? this.poSprite.parentContainer.getWorldTransformMatrix() : null
-        );
+    PlayAnimation(animKey) {
+        this.poSprite.play(animKey);
     }
 
     SwapColor(myColor) {

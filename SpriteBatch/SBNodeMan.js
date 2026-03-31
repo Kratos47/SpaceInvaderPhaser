@@ -24,15 +24,13 @@ export class SBNodeMan extends SBNodeMan_Link {
 
     Set(name, reserveNum, reserveGrow) {
         this.name = name;
-        console.assert(reserveNum > 0);
-        console.assert(reserveGrow > 0);
         this.baseSetReserve(reserveNum, reserveGrow);
     }
 
-    Attach(name) {
+    Attach(spriteParam) {
         const pNode = this.baseAdd();
         console.assert(pNode !== null);
-        pNode.Set(name);
+        pNode.Set(spriteParam);
         return pNode;
     }
 
@@ -45,15 +43,13 @@ export class SBNodeMan extends SBNodeMan_Link {
     }
 
     Remove(pNode) {
-        console.assert(pNode !== null);
         this.baseRemove(pNode);
     }
 
     Dump() { this.baseDump(); }
 
-    // --- Manager Overrides ---
     derivedCreateNode() { return new SBNode(); }
-    derivedCompare(pLinkA, pLinkB) { return false; } // Node comparison usually not needed here
+    derivedCompare(pLinkA, pLinkB) { return false; } 
     derivedWash(pLink) { pLink.Wash(); }
-    derivedDumpNode(pLink) { /* Custom Dump Logic */ }
+    derivedDumpNode(pLink) { }
 }
