@@ -1,6 +1,7 @@
 /**
  * @file Game.js
  * @description The main Phaser Scene handling initialization, asset loading, and the update loop.
+ * adding this like to refresh
  */
 
 import { TextureMan } from "./Texture/TextureManager.js";
