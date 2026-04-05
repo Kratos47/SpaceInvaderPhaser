@@ -163,13 +163,8 @@ export default class Game extends Phaser.Scene {
 
 const config = {
     type: Phaser.AUTO,
-    scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        parent: 'arcade-container',
-        width: 896,
-        height: 1024
-    },
+    width: 896,
+    height: 1024,
     scene: [Game]
 };
 
