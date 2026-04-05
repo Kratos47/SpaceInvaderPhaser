@@ -2,18 +2,40 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <title>Texture Manager Begin</title>
-    <!-- Phaser CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+
+    <style>
+        /* CRITICAL: Remove all default padding/margins that cause the 404/scroll glitch */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents the inner scrollbar from your GIF */
+            background-color: #000; /* Matches the arcade theme */
+        }
+
+        #arcade-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block; /* Removes the small gap at the bottom of the canvas */
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Texture Manager</h1>
+    <div id="arcade-container"></div>
 
-    <!-- Link the external JavaScript file here -->
     <script type="module" src="Game.js"></script>
-
 
 </body>
 
