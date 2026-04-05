@@ -4,7 +4,9 @@
  */
 
 // --- FIX: INPUT HIJACKING ---
+// Prevents the parent portfolio page from scrolling when using Space or Arrow keys.
 window.addEventListener("keydown", function (e) {
+    // 32: Space, 37: Left, 38: Up, 39: Right, 40: Down
     if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
@@ -22,6 +24,7 @@ import { TimerMan } from "./Timer/TimerMan.js";
 import { TimeEvent } from "./Timer/TimeEvent.js";
 import { setActiveScene } from './Globals.js';
 
+// --- Grid System Imports ---
 import { GameObjectMan } from "./GameObject/GameObjectMan.js";
 import { GameObject } from "./GameObject/GameObject.js";
 import { AlienCategory } from "./GameObject/Aliens/AlienCategory.js";
@@ -36,6 +39,7 @@ export default class Game extends Phaser.Scene {
         console.log("Game initialized");
         setActiveScene(this);
 
+        console.log("===== Manager Tests Begin =====");
         TextureMan.Create(1, 1);
         ImageMan.Create(5, 2);
         GameSpriteMan.Create(4, 2);
@@ -46,13 +50,22 @@ export default class Game extends Phaser.Scene {
 
     preload() {
         this.load.image(Texture.psDefaultPhaserTexture, "./assets/HotPink.png");
-        this.load.image(Texture.Name.SpaceInvaders, "assets/kindpng_4810910.png");
+        TextureMan.Add(Texture.Name.SpaceInvaders, "assets/kindpng_4810910.png");
     }
 
     create() {
         // 1. Load Textures & Images
         TextureMan.Add(Texture.Name.SpaceInvaders, Texture.Name.SpaceInvaders);
 
+        // ImageMan mappings
+        ImageMan.Add(Image.Name.OctopusA, Texture.Name.SpaceInvaders, 554, 26, 104, 70);
+        ImageMan.Add(Image.Name.OctopusB, Texture.Name.SpaceInvaders, 554, 26, 104, 70);
+        ImageMan.Add(Image.Name.AlienA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);
+        ImageMan.Add(Image.Name.AlienB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);
+        ImageMan.Add(Image.Name.SquidA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);
+        ImageMan.Add(Image.Name.SquidB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);
+
+        // Texture Atlas Slicing
         const atlas = this.textures.get(Texture.Name.SpaceInvaders);
         atlas.add(Image.Name.OctopusA, 0, 554, 26, 104, 70);
         atlas.add(Image.Name.OctopusB, 0, 554, 26, 104, 70);
@@ -69,20 +82,32 @@ export default class Game extends Phaser.Scene {
         // 3. Phaser Native Animations 
         this.anims.create({
             key: 'anim_squid',
-            frames: [{ key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidA }, { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidB }],
-            frameRate: 2, repeat: -1
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidB }
+            ],
+            frameRate: 2,
+            repeat: -1
         });
 
         this.anims.create({
             key: 'anim_alien',
-            frames: [{ key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienA }, { key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienB }],
-            frameRate: 2, repeat: -1
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.AlienB }
+            ],
+            frameRate: 2,
+            repeat: -1
         });
 
         this.anims.create({
             key: 'anim_octopus',
-            frames: [{ key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusA }, { key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusB }],
-            frameRate: 2, repeat: -1
+            frames: [
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusA },
+                { key: Texture.Name.SpaceInvaders, frame: Image.Name.OctopusB }
+            ],
+            frameRate: 2,
+            repeat: -1
         });
 
         // Trigger animations
@@ -105,15 +130,15 @@ export default class Game extends Phaser.Scene {
             if (pFirstColumn === null) pFirstColumn = pColumn;
         }
 
-        // Populate the Columns (Starting Y at 200 to be visible)
+        // Populate the Columns
         let currCol = pFirstColumn;
         for (let i = 0; i < 11; i++) {
-            const xOffset = 100.0 + (60 * i);
-            currCol.Add(AF.Create(GameObject.Name.Squid, AlienCategory.Type.Squid, xOffset, 200.0));
-            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 250.0));
-            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 300.0));
-            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 350.0));
-            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 400.0));
+            const xOffset = 50.0 + (66 * i);
+            currCol.Add(AF.Create(GameObject.Name.Squid, AlienCategory.Type.Squid, xOffset, 100.0));
+            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 150.0));
+            currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 200.0));
+            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 250.0));
+            currCol.Add(AF.Create(GameObject.Name.Octopus, AlienCategory.Type.Octopus, xOffset, 300.0));
             currCol = currCol.pNext;
         }
 
@@ -127,6 +152,7 @@ export default class Game extends Phaser.Scene {
         };
 
         TimerMan.Add(TimeEvent.Name.SpriteAnimation, marchGrid, 0.5);
+        console.log("===== Grid Setup Complete =====");
     }
 
     update(time, delta) {
@@ -137,7 +163,6 @@ export default class Game extends Phaser.Scene {
 
 const config = {
     type: Phaser.AUTO,
-    backgroundColor: '#000000',
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
