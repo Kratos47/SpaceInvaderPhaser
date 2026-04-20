@@ -50,12 +50,12 @@ export default class Game extends Phaser.Scene {
         TextureMan.Add(Texture.Name.SpaceInvaders, Texture.Name.SpaceInvaders);
 
         // Your ImageMan mappings
-        ImageMan.Add(Image.Name.OctopusA, Texture.Name.SpaceInvaders, 554, 26, 104, 70); 
-        ImageMan.Add(Image.Name.OctopusB, Texture.Name.SpaceInvaders, 554, 26, 104, 70); 
-        ImageMan.Add(Image.Name.AlienA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
-        ImageMan.Add(Image.Name.AlienB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
-        ImageMan.Add(Image.Name.SquidA, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
-        ImageMan.Add(Image.Name.SquidB, Texture.Name.SpaceInvaders, 118, 27, 95, 70);    
+        ImageMan.Add(Image.Name.OctopusA, Texture.Name.SpaceInvaders, 554, 26, 105, 71);
+        ImageMan.Add(Image.Name.OctopusB, Texture.Name.SpaceInvaders, 664, 27, 97, 71);
+        ImageMan.Add(Image.Name.AlienA, Texture.Name.SpaceInvaders, 118, 27, 97, 71);
+        ImageMan.Add(Image.Name.AlienB, Texture.Name.SpaceInvaders, 227, 27, 97, 71);
+        ImageMan.Add(Image.Name.SquidA, Texture.Name.SpaceInvaders, 349, 26, 72, 71);
+        ImageMan.Add(Image.Name.SquidB, Texture.Name.SpaceInvaders, 461, 26, 72, 71);
 
         // Slice using Texture.Name.SpaceInvaders
         this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.OctopusA, 0, 554, 26, 104, 70);
@@ -66,7 +66,7 @@ export default class Game extends Phaser.Scene {
         this.textures.get(Texture.Name.SpaceInvaders).add(Image.Name.SquidB, 0, 118, 27, 95, 70);
 
         // 2. Base Sprites (Correct 33, 45, 49 pixel widths!)
-        GameSpriteMan.Add(GameSprite.Name.SquidA, Image.Name.SquidA, Texture.Name.SpaceInvaders, 100, 532, 33, 33);
+        GameSpriteMan.Add(GameSprite.Name.SquidA, Image.Name.SquidA, Texture.Name.SpaceInvaders, 100, 532, 45, 45);
         GameSpriteMan.Add(GameSprite.Name.AlienA, Image.Name.AlienA, Texture.Name.SpaceInvaders, 100, 466, 45, 33);
         GameSpriteMan.Add(GameSprite.Name.OctopusA, Image.Name.OctopusA, Texture.Name.SpaceInvaders, 100, 400, 49, 33);
 
@@ -77,8 +77,8 @@ export default class Game extends Phaser.Scene {
                 { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidA },
                 { key: Texture.Name.SpaceInvaders, frame: Image.Name.SquidB }
             ],
-            frameRate: 2, 
-            repeat: -1    
+            frameRate: 2,
+            repeat: -1
         });
 
         this.anims.create({
@@ -106,7 +106,7 @@ export default class Game extends Phaser.Scene {
         GameSpriteMan.Find(GameSprite.Name.AlienA).PlayAnimation('anim_alien');
         GameSpriteMan.Find(GameSprite.Name.OctopusA).PlayAnimation('anim_octopus');
 
- // 4. Create SpriteBatch
+        // 4. Create SpriteBatch
         const pSB_Aliens = SpriteBatchMan.Add(SpriteBatch.Name.Aliens, 2);
 
         // 5. Build the Alien Grid using the Factory
@@ -143,13 +143,13 @@ export default class Game extends Phaser.Scene {
         // 6. THE METRONOME: Create a recurring timer to step the grid
         const marchGrid = () => {
             // 1. Check bounds and drop down if needed
-            this.pGrid.Move(); 
-            
+            this.pGrid.Move();
+
             // 2. Add deltaX and push coordinates to visual ProxySprites
-            GameObjectMan.Update(); 
+            GameObjectMan.Update();
 
             // 3. Re-add itself to the timer (0.5 seconds)
-            TimerMan.Add(TimeEvent.Name.SpriteAnimation, marchGrid, 0.5); 
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, marchGrid, 0.5);
         };
 
         // Kick off the first metronome tick
@@ -176,7 +176,7 @@ const config = {
         // Centers the canvas horizontally and vertically
         autoCenter: Phaser.Scale.CENTER_BOTH,
         // The ID of the HTML element that will hold your game
-        parent: 'arcade-container', 
+        parent: 'arcade-container',
         width: 896,
         height: 1024
     },
