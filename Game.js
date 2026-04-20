@@ -65,14 +65,14 @@ export default class Game extends Phaser.Scene {
         ImageMan.Add(Image.Name.SquidA, Texture.Name.SpaceInvaders, 349, 26, 72, 71);
         ImageMan.Add(Image.Name.SquidB, Texture.Name.SpaceInvaders, 461, 26, 72, 71);
 
-        // Texture Atlas Slicing
-        const atlas = this.textures.get(Texture.Name.SpaceInvaders);
-        atlas.add(Image.Name.OctopusA, 0, 554, 26, 104, 70);
-        atlas.add(Image.Name.OctopusB, 0, 554, 26, 104, 70);
-        atlas.add(Image.Name.AlienA, 0, 118, 27, 95, 70);
-        atlas.add(Image.Name.AlienB, 0, 118, 27, 95, 70);
-        atlas.add(Image.Name.SquidA, 0, 118, 27, 95, 70);
-        atlas.add(Image.Name.SquidB, 0, 118, 27, 95, 70);
+        // // Texture Atlas Slicing
+        // const atlas = this.textures.get(Texture.Name.SpaceInvaders);
+        // atlas.add(Image.Name.OctopusA, 0, 554, 26, 104, 70);
+        // atlas.add(Image.Name.OctopusB, 0, 554, 26, 104, 70);
+        // atlas.add(Image.Name.AlienA, 0, 118, 27, 95, 70);
+        // atlas.add(Image.Name.AlienB, 0, 118, 27, 95, 70);
+        // atlas.add(Image.Name.SquidA, 0, 118, 27, 95, 70);
+        // atlas.add(Image.Name.SquidB, 0, 118, 27, 95, 70);
 
         // 2. Base Sprites (Correct 33, 45, 49 pixel widths!)
         GameSpriteMan.Add(GameSprite.Name.SquidA, Image.Name.SquidA, Texture.Name.SpaceInvaders, 100, 532, 45, 45);
