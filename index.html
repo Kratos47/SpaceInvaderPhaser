@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Texture Manager Begin</title>
-    <!-- Phaser CDN -->
+    <meta charset="UTF-8">
+    <title>Space Invaders Phaser</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <style>
+        body {
+            background-color: white;
+            margin: 20px;
+            overflow: hidden; /* KILLS THE SCROLLBAR */
+        }
+        
+        h1 {
+            font-family: serif;
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            display: block;
+            /* Shrinks the game so the bottom doesn't bleed off the screen */
+            max-width: 100%;
+            max-height: calc(100vh - 100px); 
+            object-fit: contain;
+        }
+    </style>
 </head>
-
 <body>
 
-    <h1>Texture Manager</h1>
-
-    <!-- Link the external JavaScript file here -->
     <script type="module" src="Game.js"></script>
 
-
 </body>
-
 </html>
