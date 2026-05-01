@@ -74,6 +74,26 @@ export class GameSprite extends SpriteBase {
         // Handled natively by ProxySprite in Phaser
     }
 
+    // --- RESTORED C# METHODS ---
+
+    SwapImage(pNewImage) {
+        console.assert(pNewImage !== null, "GameSprite.SwapImage: pNewImage is null");
+        this.pImage = pNewImage;
+        
+        // In Phaser, swapping an image from a sprite sheet/atlas means changing the frame
+        this.poSprite.setFrame(this.pImage.name);
+    }
+
+    SetName(inName) {
+        this.name = inName;
+    }
+
+    GetName() {
+        return this.name;
+    }
+
+    // ---------------------------
+
     PlayAnimation(animKey) {
         this.poSprite.play(animKey);
     }

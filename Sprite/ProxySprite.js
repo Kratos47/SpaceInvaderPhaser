@@ -40,7 +40,7 @@ export class ProxySprite extends SpriteBase {
     }
 
     Render() {
-        // 🔥 FIX: This is called by SpriteBatchMan.Draw() every frame!
+        // This is called by SpriteBatchMan.Draw() every frame!
         // We sync the visual Phaser sprite with the logical coordinates here.
         if (this.pSprite && this.pSprite.poSprite) {
             this.poPhaserSprite.x = this.x;
@@ -51,11 +51,6 @@ export class ProxySprite extends SpriteBase {
                 this.pSprite.poSprite.texture.key,
                 this.pSprite.poSprite.frame.name
             );
-
-            // DIAGNOSTIC LOG: Print out the first Proxy's data to the console
-            if (this.name === ProxySprite.Name.Proxy && this.x > 0) {
-               //  console.log(`Drawing Proxy at X: ${this.x}, Y: ${this.y}`);
-            }
         }
     }
 
@@ -81,4 +76,14 @@ export class ProxySprite extends SpriteBase {
 
     SetName(inName) { this.name = inName; }
     GetName() { return this.name; }
+
+    Dump() {
+        console.log(`   Name: ${this.name}`);
+        if (this.pSprite !== null) {
+            console.log(`   GameSprite: ${this.pSprite.GetName()}`);
+        } else {
+            console.log("   GameSprite: null");
+        }
+        console.log(`   (x,y): ${this.x}, ${this.y}`);
+    }
 }
