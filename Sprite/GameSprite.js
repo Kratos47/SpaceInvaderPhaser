@@ -9,11 +9,21 @@ import { Texture } from "../Texture/Texture.js";
 
 export class GameSprite extends SpriteBase {
     static Name = Object.freeze({
-        SquidA: "SquidA",
-        AlienA: "AlienA",
+
         OctopusA: "OctopusA",
+        OctopusB: "OctopusB",
+        AlienA: "AlienA",
+        AlienB: "AlienB",
+        SquidA: "SquidA",
+        SquidB: "SquidB",
+
+        PlayerShot: "PlayerShot",
+        Ship: "Ship",
+        Wall: "Wall",
+        Missile: "Missile",
         NullObject: "NullObject",
         Uninitialized: "Uninitialized"
+
     });
 
     constructor() {
@@ -22,11 +32,11 @@ export class GameSprite extends SpriteBase {
 
         this.poSprite = activeScene.make.sprite({
             key: Texture.Name.Default,
-            add: true // MUST BE TRUE so Phaser's animation clock ticks!
+            add: false // MUST BE TRUE so Phaser's animation clock ticks!
         });
-        
+
         // Hide the base sprite! We only use it for data and animation frames
-        this.poSprite.setVisible(false); 
+        this.poSprite.setVisible(false);
 
         this.x = this.poSprite.x;
         this.y = this.poSprite.y;
@@ -37,7 +47,7 @@ export class GameSprite extends SpriteBase {
 
     Set(name, pImage, textureName, x, y, width, height, myColor = null) {
         console.assert(pImage !== null);
-        
+
         this.pImage = pImage;
         this.name = name;
 
@@ -79,7 +89,7 @@ export class GameSprite extends SpriteBase {
     SwapImage(pNewImage) {
         console.assert(pNewImage !== null, "GameSprite.SwapImage: pNewImage is null");
         this.pImage = pNewImage;
-        
+
         // In Phaser, swapping an image from a sprite sheet/atlas means changing the frame
         this.poSprite.setFrame(this.pImage.name);
     }

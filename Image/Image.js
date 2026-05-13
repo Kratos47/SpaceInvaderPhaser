@@ -8,15 +8,7 @@ import { activeScene } from "../Globals.js";
 
 export class Image extends DLink {
     static Name = Object.freeze({
-        RedBird: "RedBird",
-        YellowBird: "YellowBird",
-        GreenBird: "GreenBird",
-        WhiteBird: "WhiteBird",
-        Alien_Crab: "Alien_Crab",
-        Alien_Octopus: "Alien_Octopus",
-        Alien_Squid: "Alien_Squid",
-        Alien_UFO: "Alien_UFO",
-        Stitch: "Stitch",
+
         Default: "Default",
         OctopusA: "OctopusA",
         OctopusB: "OctopusB",
@@ -24,8 +16,13 @@ export class Image extends DLink {
         AlienB: "AlienB",
         SquidA: "SquidA",
         SquidB: "SquidB",
+        Alien_UFO: "Alien_UFO",
+        PlayerShot: "PlayerShot",
+        Ship: "Ship",
+        Missile: "Missile",
         NullObject: "NullObject",
         Uninitialized: "Uninitialized",
+
     });
 
     constructor() {
@@ -60,7 +57,7 @@ export class Image extends DLink {
     }
 
     Wash() {
-        this.clear(); 
+        this.clear();
         this.privClear();
     }
 

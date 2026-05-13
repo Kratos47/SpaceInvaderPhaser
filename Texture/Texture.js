@@ -13,6 +13,7 @@ export class Texture extends DLink {
         PacMan: "PacMan",
         Aliens: "Aliens",
         Stitch: "Stitch",
+        ShipNdShots: "ShipNdShots",
         SpaceInvaders: "SpaceInvaders",
         Uninitialized: "Uninitialized"
     });

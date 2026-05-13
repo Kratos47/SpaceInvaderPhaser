@@ -1,6 +1,6 @@
-import { GameObject } from "../GameObject/GameObject.js";
 import { Iterator } from "./Iterator.js";
 import { Component } from "./Component.js";
+import { GameObject } from "../GameObject/GameObject.js";
 
 export class Composite extends GameObject {
     constructor(gameName = GameObject.Name.Uninitialized, spriteName = null) {
@@ -30,12 +30,11 @@ export class Composite extends GameObject {
     }
 
     GetFirstChild() {
-        console.assert(this.poHead !== null);
+        // Removed assert: Groups like MissileGroup start empty and will legally return null!
         return this.poHead;
     }
 
     GetLastChild() {
-        console.assert(this.poLast !== null);
         return this.poLast;
     }
 

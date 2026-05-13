@@ -1,9 +1,15 @@
-import { Leaf } from "../Composite/Leaf.js";
+import { Leaf } from "../Composite/Leaf.js"; // Adjust path if needed
 import { GameObject } from "./GameObject.js";
+import { GameSprite } from "../Sprite/GameSprite.js"; // Need this for the enum!
 
 export class NullGameObject extends Leaf {
     constructor() {
-        super(GameObject.Name.Null_Object, null);
+        // MATCHING C# EXACTLY
+        super(GameObject.Name.Null_Object, GameSprite.Name.NullObject);
+    }
+
+    Accept(other) {
+        other.VisitNullGameObject(this);
     }
 
     Update() {

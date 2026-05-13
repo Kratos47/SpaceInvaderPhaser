@@ -1,8 +1,3 @@
-/**
- * @file BoxSprite.js
- * @description Represents an un-filled graphical rectangle, primarily used for collision boxes.
- */
-
 import { SpriteBase } from "./SpriteBase.js";
 import { activeScene, denormalizeToHex } from "../Globals.js";
 
@@ -17,31 +12,28 @@ export class BoxSprite extends SpriteBase {
         super();
         this.name = BoxSprite.Name.Uninitialized;
         this.poLineColor = denormalizeToHex(1, 1, 1);
+        this.lineWidth = 2;
 
         this.poBoxSprite = activeScene.make.graphics({ add: false });
         console.assert(this.poBoxSprite !== null, "Phaser Graphics creation failed");
     }
 
     Set(name, x, y, width, height, pLineColor = null, lineWidth = 2, Alpha = 1) {
-        console.assert(this.poBoxSprite !== null);
         this.name = name;
+        this.x = x;
+        this.y = y;
+        
+        // 🔥 FIX: Azul pushes width/height into the scale properties!
+        this.sx = width;   
+        this.sy = height; 
+        
+        this.lineWidth = lineWidth;
 
         if (pLineColor === null) {
             this.poLineColor = denormalizeToHex(1, 1, 1);
         } else {
             this.poLineColor = denormalizeToHex(pLineColor);
         }
-
-        this.poBoxSprite.clear();
-        this.poBoxSprite.lineStyle(lineWidth, this.poLineColor, Alpha);
-        this.poBoxSprite.strokeRect(0, 0, width, height);
-        this.poBoxSprite.setPosition(x, y);
-
-        this.x = x;
-        this.y = y;
-        this.width = width;   
-        this.height = height; 
-        this.angle = this.poBoxSprite.angle;
     }
 
     privClear() {
@@ -55,39 +47,38 @@ export class BoxSprite extends SpriteBase {
     }
 
     SwapColor(myColor, show = true) {
-        console.assert(myColor !== null, "Color cannot be null");
-
         this.poBoxSprite.setVisible(show);
         if (!show) return;
-
-        this.poBoxSprite.clear();
-        const hexColor = denormalizeToHex(myColor);
-        
-        const thickness = 2;
-        this.poBoxSprite.lineStyle(thickness, hexColor, 1);
-
-        const w = this.width || 100;
-        const h = this.height || 100;
-        this.poBoxSprite.strokeRect(0, 0, w, h);
+        this.poLineColor = denormalizeToHex(myColor);
     }
 
     Wash() {
         this.privClear();
     }
 
-    Render() {
+    Update() {
         if (!this.poBoxSprite) return;
+
+        this.poBoxSprite.clear();
+        this.poBoxSprite.lineStyle(this.lineWidth, this.poLineColor, 1);
+
+        // 🔥 FIX: Draw the stroke dynamically using sx and sy, 
+        // which prevents Phaser from stretching the actual line thickness!
+        const w = this.sx;
+        const h = this.sy;
+
+        // Draw from the center outwards (Azul standard)
+        this.poBoxSprite.strokeRect(-w / 2, -h / 2, w, h);
+
+        this.poBoxSprite.x = this.x;
+        this.poBoxSprite.y = this.y;
+        this.poBoxSprite.angle = this.angle;
+    }
+
+    Render() {
+        if (!this.poBoxSprite || !this.poBoxSprite.visible) return;
         const renderer = activeScene.sys.renderer;
         const camera = activeScene.cameras.main;
         this.poBoxSprite.renderWebGL(renderer, this.poBoxSprite, camera);
-    }
-
-    Update() {
-        this.poBoxSprite.x = this.x;
-        this.poBoxSprite.y = this.y;
-        this.poBoxSprite.scaleX = this.sx;
-        this.poBoxSprite.scaleY = this.sy;
-        this.poBoxSprite.angle = this.angle;
-        this.poBoxSprite.update();
     }
 }

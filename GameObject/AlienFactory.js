@@ -1,5 +1,4 @@
 import { SpriteBatchMan } from "../SpriteBatch/SpriteBatchMan.js";
-import { GameObjectMan } from "./GameObjectMan.js"; 
 import { GameSprite } from "../Sprite/GameSprite.js";
 import { AlienCategory } from "./Aliens/AlienCategory.js";
 import { Squid } from "./Aliens/Squid.js";
@@ -9,9 +8,13 @@ import { AlienGrid } from "./Aliens/AlienGrid.js";
 import { AlienColumn } from "./Aliens/AlienColumn.js";
 
 export class AlienFactory {
-    constructor(spriteBatchName) {
+    // 1. Added boxSpriteBatchName to constructor to match C#
+    constructor(spriteBatchName, boxSpriteBatchName) {
         this.pSpriteBatch = SpriteBatchMan.Find(spriteBatchName);
-        console.assert(this.pSpriteBatch !== null, "AlienFactory could not find SpriteBatch");
+        console.assert(this.pSpriteBatch !== null, "AlienFactory: could not find SpriteBatch");
+        
+        this.pBoxSpriteBatch = SpriteBatchMan.Find(boxSpriteBatchName);
+        console.assert(this.pBoxSpriteBatch !== null, "AlienFactory: could not find BoxSpriteBatch");
     }
 
     Create(name, type, posX = 0.0, posY = 0.0) {
@@ -45,12 +48,12 @@ export class AlienFactory {
 
         console.assert(pGameObj !== null);
         
-        GameObjectMan.Attach(pGameObj);
+        // C# Equivalent: //GameObjectMan.Attach(pGameObj); 
+        // We do NOT attach here because it gets added to the composite tree via pGrid.Add()!
 
-        if (pGameObj.pProxySprite) {
-            // FIX: Pass the actual object, NOT .name
-            this.pSpriteBatch.Attach(pGameObj.pProxySprite);
-        }
+        // 2. Exact C# 1:1 method calls for wiring sprites
+        pGameObj.ActivateGameSprite(this.pSpriteBatch);
+        pGameObj.ActivateCollisionSprite(this.pBoxSpriteBatch);
 
         return pGameObj;
     }

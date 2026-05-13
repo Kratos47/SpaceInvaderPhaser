@@ -18,6 +18,8 @@ export class ProxySprite extends SpriteBase {
 
         // Give the Proxy its own actual Phaser sprite
         this.poPhaserSprite = activeScene.add.sprite(0, 0, Texture.Name.Default);
+        
+        // 🔥 FIX 1: Hide it immediately! We don't want Phaser exposing pooled objects at 0,0.
         this.poPhaserSprite.setVisible(false);
 
         if (name !== ProxySprite.Name.Uninitialized) {
@@ -30,18 +32,25 @@ export class ProxySprite extends SpriteBase {
         this.pSprite = GameSpriteMan.Find(name);
         console.assert(this.pSprite !== null, "ProxySprite could not find base GameSprite");
 
-        // Inherit exact dimensions from the heavy base sprite
+        // 🔥 FIX 2: Dynamically grab the exact atlas key and frame from the base GameSprite!
+        const atlasKey = this.pSprite.poSprite.texture.key;
+        const frameName = this.pSprite.poSprite.frame.name;
+        
+        this.poPhaserSprite.setTexture(atlasKey, frameName);
         this.poPhaserSprite.setDisplaySize(this.pSprite.sx, this.pSprite.sy);
-        this.poPhaserSprite.setVisible(true);
+        
+        // Removed setVisible(true) from here! 
+        // Pooled objects must stay invisible until SpriteBatch explicitly draws them.
     }
 
     Update() {
         this.PrivPushToReal();
     }
 
-    Render() {
-        // This is called by SpriteBatchMan.Draw() every frame!
-        // We sync the visual Phaser sprite with the logical coordinates here.
+   Render() {
+        // 🔥 FIX 1: Make sure pooled objects become visible when rendering begins!
+        this.poPhaserSprite.setVisible(true);
+
         if (this.pSprite && this.pSprite.poSprite) {
             this.poPhaserSprite.x = this.x;
             this.poPhaserSprite.y = this.y;
@@ -51,6 +60,12 @@ export class ProxySprite extends SpriteBase {
                 this.pSprite.poSprite.texture.key,
                 this.pSprite.poSprite.frame.name
             );
+
+            // 🔥 FIX 2: setTexture destroys the scale! We MUST re-apply the absolute 
+            // pixel dimensions from the GameSprite every single frame!
+            this.poPhaserSprite.setDisplaySize(this.pSprite.sx, this.pSprite.sy);
+            
+            this.poPhaserSprite.angle = this.angle;
         }
     }
 
