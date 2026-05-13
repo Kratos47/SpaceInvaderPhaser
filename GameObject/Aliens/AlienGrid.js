@@ -39,6 +39,7 @@ export class AlienGrid extends Composite {
         super.Update();
     }
 
+    
     MoveGrid() {
         const pFor = new ForwardIterator(this);
         let pNode = pFor.First();
