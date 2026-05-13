@@ -153,15 +153,39 @@ export default class Game extends Phaser.Scene {
         pAnimSprite_Octopus.Attach(Image.Name.OctopusA);
 
         const pMovement = new MovementSprite();
-
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Squid, 0.5);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Alien, 0.5);
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Octopus, 0.5);
-
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, pMovement, 0.5);
-
         const pSound = new Sound();
-        TimerMan.Add(TimeEvent.Name.SpriteAnimation, pSound, 0.5);
+
+        // 🔥 THE BROWSER AUTOPLAY FIX:
+        // Create a classic arcade start text in the center of the screen
+        const startText = this.add.text(448, 512, 'CLICK TO START', { 
+            fontSize: '40px', 
+            fill: '#00FF00', 
+            fontFamily: 'Courier',
+            fontStyle: 'bold'
+        }).setOrigin(0.5);
+
+       // Wait for a mouse click anywhere on the game canvas
+        this.input.once('pointerdown', () => {
+            
+            // 1. Destroy the start text
+            startText.destroy(); 
+            
+            // 🔥 2. BROWSER SECURITY BYPASS: 
+            // We must force the AudioContext to wake up instantly before TimerMan takes over!
+            if (this.sound.context && this.sound.context.state === 'suspended') {
+                this.sound.context.resume();
+            }
+            // Play a silent dummy note to permanently unlock the browser's audio pipeline
+            this.sound.play('fastinvader2', { volume: 0 }); 
+
+            // 3. Now it is safe to hand the commands to the 0.5 second delay loop
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Squid, 0.5);
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Alien, 0.5);
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Octopus, 0.5);
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, pMovement, 0.5);
+            TimerMan.Add(TimeEvent.Name.SpriteAnimation, pSound, 0.5);
+            
+        });
 
         // 7. Input Observers
         let pInputSubject;
@@ -199,6 +223,7 @@ export default class Game extends Phaser.Scene {
         pColPair.Attach(new ShipReadyObserver());
         pColPair.Attach(new ShipRemoveMissileObserver());
         pColPair.Attach(new AlienRemoveObserver());
+
     }
 
     update(time, delta) {
