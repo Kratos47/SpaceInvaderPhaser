@@ -84,7 +84,6 @@ export default class Game extends Phaser.Scene {
         GameSpriteMan.Add(GameSprite.Name.OctopusA, Image.Name.OctopusA, Texture.Name.SpaceInvaders, 100, 400, 49, 33);
         GameSpriteMan.Add(GameSprite.Name.PlayerShot, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 0, 0, 5, 40);
         GameSpriteMan.Add(GameSprite.Name.Ship, Image.Name.Ship, Texture.Name.SpaceInvaders, 500, 900, 80, 28);
-        console.log("SHIP SEARCH RESULT:", GameSpriteMan.Find(GameSprite.Name.Ship));
 
         // 3. Create SpriteBatches (Exactly matching C# logic)
         const pSB_Aliens = SpriteBatchMan.Add(SpriteBatch.Name.Aliens, 2);
@@ -229,7 +228,7 @@ export default class Game extends Phaser.Scene {
 
         // --- RAW PHASER RENDER HACK ---
         // This bypasses your SpriteBatches and Managers entirely
-        this.add.sprite(448, 512, Texture.Name.SpaceInvaders, Image.Name.Ship).setDisplaySize(80, 28);
+        //this.add.sprite(448, 512, Texture.Name.SpaceInvaders, Image.Name.Ship).setDisplaySize(80, 28);
 
     }
 
