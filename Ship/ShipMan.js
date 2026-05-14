@@ -6,6 +6,9 @@ import { Missile } from "../GameObject/Missiles/Missile.js"
 import { GameObject } from "../GameObject/GameObject.js";
 import { GameSprite } from "../Sprite/GameSprite.js";
 import { GameObjectMan } from "../GameObject/GameObjectMan.js";
+// 🔥 FIX: Must import SpriteBatches to render!
+import { SpriteBatchMan } from "../SpriteBatch/SpriteBatchMan.js";
+import { SpriteBatch } from "../SpriteBatch/SpriteBatch.js";
 
 export class ShipMan {
     static State = Object.freeze({
@@ -15,71 +18,55 @@ export class ShipMan {
     });
 
     constructor() {
-        // Store the states
         this.pStateReady = new ShipStateReady();
         this.pStateMissileFlying = new ShipStateMissileFlying();
         this.pStateDead = new ShipStateDead();
-
-        // set active
         this.pShip = null;
         this.pMissile = null;
     }
 
     static Create() {
-        console.assert(ShipMan.instance === null, "ShipMan already initialized");
         if (ShipMan.instance === null) {
             ShipMan.instance = new ShipMan();
         }
-
         ShipMan.instance.pShip = ShipMan.ActivateShip();
         ShipMan.instance.pShip.SetState(ShipMan.State.Ready);
     }
 
     static PrivInstance() {
-        console.assert(ShipMan.instance !== null, "ShipMan not initialized");
         return ShipMan.instance;
     }
 
     static GetShip() {
-        const pShipMan = ShipMan.PrivInstance();
-        console.assert(pShipMan !== null);
-        console.assert(pShipMan.pShip !== null);
-        return pShipMan.pShip;
+        return ShipMan.PrivInstance().pShip;
     }
 
     static GetState(state) {
         const pShipMan = ShipMan.PrivInstance();
-        let pShipState = null;
-
         switch (state) {
-            case ShipMan.State.Ready:
-                pShipState = pShipMan.pStateReady;
-                break;
-            case ShipMan.State.MissileFlying:
-                pShipState = pShipMan.pStateMissileFlying;
-                break;
-            case ShipMan.State.Dead:
-                pShipState = pShipMan.pStateDead;
-                break;
-            default:
-                console.assert(false, "Unknown Ship State");
-                break;
+            case ShipMan.State.Ready: return pShipMan.pStateReady;
+            case ShipMan.State.MissileFlying: return pShipMan.pStateMissileFlying;
+            case ShipMan.State.Dead: return pShipMan.pStateDead;
+            default: return null;
         }
-
-        return pShipState;
     }
 
     static GetMissile() {
-        const pShipMan = ShipMan.PrivInstance();
-        return pShipMan.pMissile;
+        return ShipMan.PrivInstance().pMissile;
     }
 
-    static ActivateMissile() {
+static ActivateMissile() {
         const pShipMan = ShipMan.PrivInstance();
 
         // Copy over safe copy
         const pMissile = new Missile(GameObject.Name.PlayerShot, GameSprite.Name.PlayerShot, 400, 100);
         pShipMan.pMissile = pMissile;
+
+        // 🔥 FIX: Attach the missile to the SpriteBatches so it renders!
+        const pSB_Aliens = SpriteBatchMan.Find(SpriteBatch.Name.Aliens);
+        const pSB_Boxes = SpriteBatchMan.Find(SpriteBatch.Name.Boxes);
+        pMissile.ActivateGameSprite(pSB_Aliens);
+        pMissile.ActivateCollisionSprite(pSB_Boxes);
 
         // Attach the missile to the missile root
         const pMissileGroup = GameObjectMan.Find(GameObject.Name.MissileGroup);
@@ -98,6 +85,10 @@ export class ShipMan {
         const pShip = new Ship(GameObject.Name.Ship, GameSprite.Name.Ship, 448, 900); 
         pShipMan.pShip = pShip;
 
+        // 🔥 FIX: Attach the Ship to the SpriteBatch so it renders!
+        const pSB_Aliens = SpriteBatchMan.Find(SpriteBatch.Name.Aliens);
+        pShip.ActivateGameSprite(pSB_Aliens);
+
         // Attach the ship to the ship root
         const pShipRoot = GameObjectMan.Find(GameObject.Name.ShipRoot);
         console.assert(pShipRoot !== null);
@@ -108,5 +99,4 @@ export class ShipMan {
         return pShipMan.pShip;
     }
 }
-
 ShipMan.instance = null;

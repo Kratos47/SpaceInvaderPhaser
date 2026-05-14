@@ -7,9 +7,8 @@ export class Missile extends MissileCategory {
         this.y = posY;
         this.enable = false;
         
-        // C# had 20.0f, but remember in Phaser top-left is (0,0). 
-        // If your ship is at the bottom shooting UP, this might need to be -20.0 later!
-        this.delta = 20.0; 
+        // 🔥 FIX: Must be negative to shoot UP the screen in Phaser!
+        this.delta = -20.0; 
     }
 
     Update() {

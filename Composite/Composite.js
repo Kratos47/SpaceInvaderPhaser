@@ -16,9 +16,15 @@ export class Composite extends GameObject {
         pComponent.pParent = this;
     }
 
-    Remove(pComponent) {
-        console.assert(pComponent !== null);
-        this.privRemoveNode(pComponent);
+    Remove(c) {
+        // 🔥 THE CRASH FIX: Method Overloading Simulation
+        if (c === undefined) {
+            // The Composite (like an empty Column) is deleting ITSELF
+            super.Remove();
+        } else {
+            // The Composite is removing a CHILD (like a dead Alien)
+            this.privRemoveNode(c);
+        }
     }
 
     Print() {

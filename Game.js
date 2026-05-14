@@ -31,15 +31,16 @@ export default class Game extends Phaser.Scene {
         console.log("Game initialized");
         setActiveScene(this);
 
-        TextureMan.Create(1, 1);
-        ImageMan.Create(5, 2);
-        GameSpriteMan.Create(4, 2);
-        BoxSpriteMan.Create(3, 1);
-        SpriteBatchMan.Create(3, 1);
-        TimerMan.Create(3, 1);
-        ProxySpriteMan.Create(10, 1);
-        GameObjectMan.Create(3, 1);
-        ColPairMan.Create(1, 1);
+        // 🔥 FIX: Bump all initial capacities to 10 to bypass Manager.Grow() bugs!
+        TextureMan.Create(2, 1);
+        ImageMan.Create(10, 2); 
+        GameSpriteMan.Create(10, 2); 
+        BoxSpriteMan.Create(10, 1);
+        SpriteBatchMan.Create(10, 1);
+        TimerMan.Create(10, 1);
+        ProxySpriteMan.Create(100, 10);
+        GameObjectMan.Create(10, 1);
+        ColPairMan.Create(10, 1);
     }
 
     preload() {
@@ -83,6 +84,7 @@ export default class Game extends Phaser.Scene {
         GameSpriteMan.Add(GameSprite.Name.OctopusA, Image.Name.OctopusA, Texture.Name.SpaceInvaders, 100, 400, 49, 33);
         GameSpriteMan.Add(GameSprite.Name.PlayerShot, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 0, 0, 5, 40);
         GameSpriteMan.Add(GameSprite.Name.Ship, Image.Name.Ship, Texture.Name.SpaceInvaders, 500, 900, 80, 28);
+        console.log("SHIP SEARCH RESULT:", GameSpriteMan.Find(GameSprite.Name.Ship));
 
         // 3. Create SpriteBatches (Exactly matching C# logic)
         const pSB_Aliens = SpriteBatchMan.Add(SpriteBatch.Name.Aliens, 2);
@@ -107,7 +109,8 @@ export default class Game extends Phaser.Scene {
         pWallGroup2.ActivateGameSprite(pSB_Aliens);
         pWallGroup2.ActivateCollisionSprite(pSB_Boxes);
 
-        const pWallTop = new WallTop(GameObject.Name.WallTop, GameSprite.Name.NullObject, 448, 20, 896, 40);
+        //Change the width to 5000 so it catches missiles fired from out of bounds!
+        const pWallTop = new WallTop(GameObject.Name.WallTop, GameSprite.Name.NullObject, 448, 20, 5000, 40);
         pWallTop.ActivateCollisionSprite(pSB_Boxes);
 
         pWallGroup2.Add(pWallTop);
@@ -223,6 +226,10 @@ export default class Game extends Phaser.Scene {
         pColPair.Attach(new ShipReadyObserver());
         pColPair.Attach(new ShipRemoveMissileObserver());
         pColPair.Attach(new AlienRemoveObserver());
+
+        // --- RAW PHASER RENDER HACK ---
+        // This bypasses your SpriteBatches and Managers entirely
+        this.add.sprite(448, 512, Texture.Name.SpaceInvaders, Image.Name.Ship).setDisplaySize(80, 28);
 
     }
 

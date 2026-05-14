@@ -13,7 +13,14 @@ export class Leaf extends GameObject {
     }
 
     Remove(c) {
-        console.assert(false, "Cannot remove from a Leaf");
+        // 🔥 FIX: JavaScript Method Overloading Simulation
+         if (c === undefined) {
+            // No arguments passed -> The Leaf is removing ITSELF from the tree!
+            super.Remove();
+        } else {
+            // Argument passed -> Something is trying to remove a child (Illegal!)
+            console.assert(false, "Cannot remove from a Leaf");
+        }
     }
 
     Print() {

@@ -52,9 +52,11 @@ export class GameSprite extends SpriteBase {
         this.name = name;
 
         this.poSprite.setPosition(x, y);
-        // CRITICAL FIX: setDisplaySize forces exact pixel size. setScale(33) would make it 33x bigger!
         this.poSprite.setDisplaySize(width, height);
-        this.poSprite.setTexture(textureName, pImage.name);
+        
+        // 🔥 OCTOPUS KILLER FIX: Handle string vs Object natively
+        let frameName = (typeof pImage === 'string') ? pImage : pImage.name;
+        this.poSprite.setTexture(textureName, frameName);
 
         if (myColor !== null) this.SwapColor(myColor);
 
@@ -84,8 +86,6 @@ export class GameSprite extends SpriteBase {
         // Handled natively by ProxySprite in Phaser
     }
 
-    // --- RESTORED C# METHODS ---
-
     SwapImage(pNewImage) {
         console.assert(pNewImage !== null, "GameSprite.SwapImage: pNewImage is null");
         this.pImage = pNewImage;
@@ -101,8 +101,6 @@ export class GameSprite extends SpriteBase {
     GetName() {
         return this.name;
     }
-
-    // ---------------------------
 
     PlayAnimation(animKey) {
         this.poSprite.play(animKey);

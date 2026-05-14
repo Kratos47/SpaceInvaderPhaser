@@ -49,9 +49,6 @@ export class SpriteBatchMan extends SpriteBatchMan_Link {
         }
     }
 
-    /**
-     * Inserts a SpriteBatch into the active list sorted by priority (Z-Order).
-     */
     SortedInsert(name, head, priority, reserveNum, reserveGrow) {
         const pMan = SpriteBatchMan.privGetInstance();
         const pNode = pMan.baseAdd();
@@ -100,8 +97,45 @@ export class SpriteBatchMan extends SpriteBatchMan_Link {
 
     static Remove(pNode) {
         const pMan = SpriteBatchMan.privGetInstance();
-        console.assert(pNode !== null);
-        pMan.baseRemove(pNode);
+        console.assert(pNode !== null && pNode !== undefined, "SpriteBatchMan.Remove: pNode is null or undefined");
+
+        // 🔥 OVERLOAD SIMULATION 1: Is this a full SpriteBatch layer?
+        if (typeof pNode.GetSBNodeMan === 'function') {
+            pMan.baseRemove(pNode);
+            return;
+        }
+
+        // 🔥 OVERLOAD SIMULATION 2: It is a single SBNode! 
+        // We must search the SpriteBatches to find which manager owns it, and remove it safely.
+        let pBatch = pMan.poActive;
+        if (!pBatch && typeof pMan.baseGetActive === 'function') pBatch = pMan.baseGetActive();
+
+        while (pBatch !== null) {
+            const pSBNodeMan = pBatch.GetSBNodeMan();
+            if (pSBNodeMan) {
+                
+                // Get the active list of sprites in this batch
+                let currSBNode = pSBNodeMan.poActive;
+                if (!currSBNode && typeof pSBNodeMan.baseGetActive === 'function') {
+                    currSBNode = pSBNodeMan.baseGetActive();
+                }
+
+                // Traverse the active sprites looking for the dead one
+                while (currSBNode !== null) {
+                    if (currSBNode === pNode) {
+                        // Found it! Safely remove it from its rightful owner.
+                        if (typeof pSBNodeMan.baseRemove === 'function') {
+                            pSBNodeMan.baseRemove(pNode);
+                        } else if (typeof pSBNodeMan.Remove === 'function') {
+                            pSBNodeMan.Remove(pNode);
+                        }
+                        return; // Safely exit without corrupting the master list!
+                    }
+                    currSBNode = currSBNode.pNext;
+                }
+            }
+            pBatch = pBatch.pNext;
+        }
     }
 
     static Dump() { SpriteBatchMan.privGetInstance().baseDump(); }
