@@ -102,13 +102,20 @@ canvas {
     letter-spacing: 1px;
 }
 
-/* Displays the buttons ONLY on small screens OR devices with touchscreens */
 @media (max-width: 768px), (pointer: coarse) {
     #mobile-controls {
         display: flex;
     }
+    
+    body {
+        /* Reserves 120px at the bottom of the screen for the buttons */
+        padding-bottom: 120px; 
+        box-sizing: border-box;
+    }
+
     canvas {
-        max-height: calc(100vh - 150px);
-        margin-bottom: 120px; 
+        /* Lets the game stretch naturally without being forced upward */
+        max-height: 100%; 
+        margin-bottom: 0; 
     }
 }
