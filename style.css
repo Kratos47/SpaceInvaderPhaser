@@ -1,0 +1,114 @@
+/* =========================================
+   SPACE INVADERS - style.css
+   ========================================= */
+
+body {
+    /* Fallback black background */
+    background-color: #000; 
+    margin: 0; 
+    overflow: hidden;           
+    
+    /* Centers the game */
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    height: 100vh; 
+    
+    /* CRITICAL FOR MOBILE: Prevents swipe-to-scroll or pinch-to-zoom */
+    touch-action: none; 
+}
+
+h1 {
+    display: none; 
+}
+
+canvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%; 
+    object-fit: contain;
+    
+    /* THE GAME BORDER */
+    border: 2px solid #444; 
+    background-color: #000; 
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.9); 
+}
+
+/* RESPONSIVE TILED BACKGROUND */
+/* Only applies if the screen is wider than 950px */
+@media (min-width: 950px) {
+    body {
+        /* SVG Background Implementation */
+        background-image: url('./assets/SI_BG.svg'); 
+        background-repeat: repeat;
+        background-size: 100px; 
+        
+        background-color: rgba(0, 0, 0, 0.85);
+        background-blend-mode: multiply;
+    }
+}
+
+/* =========================================
+   VIRTUAL GAMEPAD (MOBILE CONTROLS)
+   ========================================= */
+#mobile-controls {
+    display: none; /* Hidden on desktop by default */
+    position: absolute;
+    bottom: 30px; 
+    left: 0;
+    width: 100%;
+    padding: 0 20px; 
+    box-sizing: border-box;
+    justify-content: space-between; 
+    align-items: flex-end;
+    z-index: 100;
+}
+
+.d-pad {
+    display: flex;
+    gap: 15px; 
+}
+
+.control-btn {
+    background: rgba(231, 76, 60, 0.6); 
+    border: 2px solid #e74c3c;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 65px; 
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.control-btn:active {
+    background: rgba(231, 76, 60, 1);
+    transform: scale(0.95); 
+}
+
+.fire-btn {
+    width: 80px; 
+    height: 80px;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+/* Displays the buttons ONLY on small screens OR devices with touchscreens */
+@media (max-width: 768px), (pointer: coarse) {
+    #mobile-controls {
+        display: flex;
+    }
+    canvas {
+        max-height: calc(100vh - 150px);
+        margin-bottom: 120px; 
+    }
+}
