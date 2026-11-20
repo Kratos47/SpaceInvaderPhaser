@@ -1,9 +1,10 @@
 /**
- * @file Engine.js
- * @description Barrel file to consolidate all Space Invaders engine imports into a single clean module.
+- @file Engine.js
+- @description Barrel file to consolidate all Space Invaders engine imports into a single clean module.
  */
 
 // --- Core Engine ---
+export { Simulation } from "./Input/Simulation.js";
 export { TextureMan } from "./Texture/TextureManager.js";
 export { Texture } from "./Texture/Texture.js";
 export { ImageMan } from "./Image/ImageManager.js";
@@ -23,6 +24,7 @@ export { InputMan } from "./Input/InputMan.js";
 export { MoveRightObserver } from "./Input/MoveRightObserver.js";
 export { MoveLeftObserver } from "./Input/MoveLeftObserver.js";
 export { ShootObserver } from "./Input/ShootObserver.js";
+export { ToggelColBox_Key_T } from "./Input/ToggelColBox_Key_T.js";
 export { Sound } from "./Sound/Sound.js";
 
 // --- Game Objects & Animations ---
@@ -34,11 +36,12 @@ export { AlienCategory } from "./GameObject/Aliens/AlienCategory.js";
 export { AlienFactory } from "./GameObject/AlienFactory.js";
 export { ShipRoot } from "./Ship/ShipRoot.js";
 export { ShipMan } from "./Ship/ShipMan.js";
-export { MissileGroup } from "./GameObject/Missiles/MissileGroup.js"
-export { WallGroup } from "./GameObject/Wall/WallGroup.js"
+export { MissileGroup } from "./GameObject/Missiles/MissileGroup.js";
+export { WallGroup } from "./GameObject/Wall/WallGroup.js";
 export { WallRight } from "./GameObject/Wall/WallRight.js";
 export { WallLeft } from "./GameObject/Wall/WallLeft.js";
 export { WallTop } from "./GameObject/Wall/WallTop.js";
+export { WallBottom } from "./GameObject/Wall/WallBottom.js";
 
 // --- Collisions & Observers ---
 export { ColPairMan } from "./Collisions/ColPairManager.js";
@@ -49,3 +52,29 @@ export { ShipReadyObserver } from "./Observers/ShipReadyObserver.js";
 export { ShipRemoveMissileObserver } from "./Observers/ShipRemoveMissileObserver.js";
 export { AlienRemoveObserver } from "./Observers/AlienRemoveObserver.js";
 export { DelayedObjectMan } from "./GameObject/DelayedObjectMan.js";
+
+// --- NEW SHIELD EXPORTS ---
+export { ShieldRoot } from "./GameObject/Shield/ShieldRoot.js";
+export { ShieldFactory } from "./GameObject/Shield/ShieldFactory.js";
+export { ShieldCategory } from "./GameObject/Shield/ShieldCategory.js";
+export { ShieldColumn } from "./GameObject/Shield/ShieldColumn.js";
+export { ShieldGrid } from "./GameObject/Shield/ShieldGrid.js";
+export { ShieldBrick } from "./GameObject/Shield/ShieldBrick.js";
+
+// --- NEW BOMB EXPORTS ---
+export { BombRoot } from "./GameObject/Bomb/BombRoot.js";
+export { BombCategory } from "./GameObject/Bomb/BombCategory.js";
+export { Bomb } from "./GameObject/Bomb/Bomb.js";
+export { FallStrategy } from "./GameObject/Bomb/FallStrategy.js";
+export { FallStraight } from "./GameObject/Bomb/FallStraight.js";
+export { FallZigZag } from "./GameObject/Bomb/FallZigZag.js";
+export { FallDagger } from "./GameObject/Bomb/FallDagger.js";
+
+// --- NEW OBSERVER EXPORTS ---
+export { RemoveMissileObserver } from "./Observers/RemoveMissileObserver.js";
+export { RemoveBombObserver } from "./Observers/RemoveBombObserver.js";
+export { RemoveBrickObserver } from "./Observers/RemoveBrickObserver.js";
+
+// --- NEW TIMER EVENT EXPORTS ---
+export { BombSpawnEvent } from "./Timer/Events/BombSpawnEvent.js";
+export { MissileSpawnEvent } from "./Timer/Events/MissileSpawnEvent.js";

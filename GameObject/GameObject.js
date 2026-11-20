@@ -1,25 +1,45 @@
 import { Component } from "../Composite/Component.js";
 import { ProxySprite } from "../Sprite/ProxySprite.js"
-import { Iterator } from "../Composite/Iterator.js" 
+import { Iterator } from "../Composite/Iterator.js"
 
-import { ColObject } from "../Collisions/ColObject.js"; 
+import { ColObject } from "../Collisions/ColObject.js";
 import { SpriteBatchMan } from "../SpriteBatch/SpriteBatchMan.js";
 import { BoxSpriteMan } from "../Sprite/BoxSpriteManager.js";
 import { GameSprite } from "../Sprite/GameSprite.js";
 
 export class GameObject extends Component {
-    static Type = Object.freeze({
-        Squid: "Squid", Alien: "Alien", Octopus: "Octopus", Column: "Column", Grid: "Grid"
-    });
+    // static Type = Object.freeze({
+    //     Squid: "Squid", Alien: "Alien", Octopus: "Octopus", Column: "Column", Grid: "Grid"
+    // });
 
     static Name = Object.freeze({
         Squid: "Squid", Alien: "Alien", Octopus: "Octopus", AlienGrid: "AlienGrid",
         Column_0: "Column_0", Column_1: "Column_1", Column_2: "Column_2", Column_3: "Column_3",
         Column_4: "Column_4", Column_5: "Column_5", Column_6: "Column_6", Column_7: "Column_7",
         Column_8: "Column_8", Column_9: "Column_9", Column_10: "Column_10",
-        WallGroup: "WallGroup", WallRight: "WallRight", WallLeft: "WallLeft", WallTop: "WallTop",
+
+        WallGroup: "WallGroup", WallRight: "WallRight", WallLeft: "WallLeft", WallTop: "WallTop", WallBottom: "WallBottom",
+
         Ship: "Ship", ShipRoot: "ShipRoot", Missile: "Missile", MissileGroup: "MissileGroup",
-        PlayerShot: "PlayerShot", Null_Object: "Null_Object", Uninitialized: "Uninitialized"
+        PlayerShot: "PlayerShot",
+
+        // --- NEW ENUMS ---
+        ShieldRoot: "ShieldRoot",
+        ShieldGrid: "ShieldGrid",
+        ShieldColumn_0: "ShieldColumn_0",
+        ShieldColumn_1: "ShieldColumn_1",
+        ShieldColumn_2: "ShieldColumn_2",
+        ShieldColumn_3: "ShieldColumn_3",
+        ShieldColumn_4: "ShieldColumn_4",
+        ShieldColumn_5: "ShieldColumn_5",
+        ShieldColumn_6: "ShieldColumn_6",
+        ShieldBrick: "ShieldBrick",
+
+        Bomb: "Bomb",
+        BombRoot: "BombRoot",
+
+        Null_Object: "Null_Object",
+        Uninitialized: "Uninitialized"
     });
 
     constructor(gameName = GameObject.Name.Uninitialized, spriteName = null) {
@@ -42,7 +62,7 @@ export class GameObject extends Component {
     Remove() {
         // --- 1. PROXY SPRITE TEARDOWN ---
         if (this.pProxySprite !== null) {
-            
+
             // A. Safely disconnect from Azul Render Loop
             if (typeof this.pProxySprite.GetSBNode === 'function') {
                 const pSBNode = this.pProxySprite.GetSBNode();
@@ -60,7 +80,7 @@ export class GameObject extends Component {
 
         // --- 2. COLLISION BOX TEARDOWN ---
         if (this.poColObj !== null && this.poColObj.pColSprite !== null) {
-            
+
             // A. Safely disconnect from Azul Render Loop
             if (typeof this.poColObj.pColSprite.GetSBNode === 'function') {
                 const pSBNodeBox = this.poColObj.pColSprite.GetSBNode();
@@ -68,7 +88,7 @@ export class GameObject extends Component {
             } else if (this.poColObj.pColSprite.pSBNode !== undefined) {
                 SpriteBatchMan.Remove(this.poColObj.pColSprite.pSBNode);
             }
-            
+
             // B. Hide the specific Box graphic (which was already working great)
             if (this.poColObj.pColSprite.poBoxSprite) {
                 this.poColObj.pColSprite.poBoxSprite.setVisible(false);
@@ -93,10 +113,8 @@ export class GameObject extends Component {
         pNode = Iterator.GetChild(pNode);
 
         if (pNode !== null) {
-            ColTotal.x = pNode.poColObj.poColRect.x;
-            ColTotal.y = pNode.poColObj.poColRect.y;
-            ColTotal.width = pNode.poColObj.poColRect.width;
-            ColTotal.height = pNode.poColObj.poColRect.height;
+            // 🔥 C# SYNTAX RESTORED: Passes the object directly into Set()
+            ColTotal.Set(pNode.poColObj.poColRect);
 
             while (pNode !== null) {
                 ColTotal.Union(pNode.poColObj.poColRect);
@@ -105,11 +123,10 @@ export class GameObject extends Component {
 
             this.x = this.poColObj.poColRect.x;
             this.y = this.poColObj.poColRect.y;
-            
+
             this.poColObj.UpdatePos(this.x, this.y);
         }
     }
-
     Update() {
         if (this.pProxySprite !== null) {
             this.pProxySprite.x = this.x;
@@ -134,6 +151,13 @@ export class GameObject extends Component {
             // 🔥 STORE THE NODE: This ensures we can actually remove it later!
             this.pProxySprite.pSBNode = pSpriteBatch.Attach(this.pProxySprite);
         }
+    }
+
+    SetCollisionColor(red, green, blue) {
+        console.assert(this.poColObj !== null, "GameObject: poColObj is null");
+        console.assert(this.poColObj.pColSprite !== null, "GameObject: pColSprite is null");
+
+        this.poColObj.pColSprite.SetLineColor(red, green, blue);
     }
 
     GetColObject() {

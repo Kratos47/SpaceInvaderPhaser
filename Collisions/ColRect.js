@@ -9,6 +9,24 @@ export class ColRect {
         this.height = height;
     }
 
+    // --- ADDED: C#-style Method Overloading for Set() ---
+    Set(a, b, c, d) {
+        // Check if 4 numbers were passed: Set(x, y, width, height)
+        if (a !== undefined && b !== undefined && c !== undefined && d !== undefined) {
+            this.x = a;
+            this.y = b;
+            this.width = c;
+            this.height = d;
+        } 
+        // Check if 1 object was passed: Set(otherColRect)
+        else if (a !== undefined && a.x !== undefined) {
+            this.x = a.x;
+            this.y = a.y;
+            this.width = a.width;
+            this.height = a.height;
+        }
+    }
+
     static Intersect(ColRectA, ColRectB) {
         let A_minx = ColRectA.x - ColRectA.width / 2;
         let A_maxx = ColRectA.x + ColRectA.width / 2;

@@ -10,20 +10,13 @@ export class WallTop extends WallCategory {
         this.x = posX;
         this.y = posY;
 
-        // 🔥 CRITICAL FIX: Inflate the 0x0 dummy box AND the debug BoxSprite!
+         // 🔥 C# SYNTAX RESTORED: One line to set the box size
         if (this.poColObj && this.poColObj.poColRect) {
-            this.poColObj.poColRect.x = posX;
-            this.poColObj.poColRect.y = posY;
-            this.poColObj.poColRect.width = width;
-            this.poColObj.poColRect.height = height;
-            
-            if (this.poColObj.pColSprite) {
-                this.poColObj.pColSprite.width = width;
-                this.poColObj.pColSprite.height = height;
-                this.poColObj.pColSprite.SwapColor({ r: 0, g: 0, b: 0 }); // Black
-            }
-            this.poColObj.UpdatePos(this.x, this.y);
+            this.poColObj.poColRect.Set(this.x, this.y, width, height);
         }
+        
+        // 🔥 C# SYNTAX RESTORED: Uses your new wrapper method for colors
+        this.SetCollisionColor(1.0, 1.0, 0.0); // Yellow
     }
 
     Accept(other) {          

@@ -1,19 +1,20 @@
-import { DLink } from "../Manager/DLink.js"
+import { ColVisitor } from "../Collisions/ColVisitor.js";
 
-export class Component extends DLink {
+export class Component extends ColVisitor {
     static Container = Object.freeze({
         LEAF: "LEAF",
         COMPOSITE: "COMPOSITE",
         Unknown: "Unknown"
     });
 
-  // Classic Space Invaders jump distances
-    static deltaX = 10.0; 
+    // Classic Space Invaders jump distances
+    static deltaX = 10.0;
     static deltaY = 5.0;
 
     constructor() {
         super();
         this.pParent = null;
+        this.pReverse = null;
         this.holder = Component.Container.Unknown;
     }
 

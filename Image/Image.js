@@ -10,6 +10,8 @@ export class Image extends DLink {
     static Name = Object.freeze({
 
         Default: "Default",
+        
+        // --- Aliens ---
         OctopusA: "OctopusA",
         OctopusB: "OctopusB",
         AlienA: "AlienA",
@@ -17,11 +19,32 @@ export class Image extends DLink {
         SquidA: "SquidA",
         SquidB: "SquidB",
         Alien_UFO: "Alien_UFO",
+        
+        // --- Player & Weapons ---
         PlayerShot: "PlayerShot",
         Ship: "Ship",
         Missile: "Missile",
+        
+        // --- Walls ---
+        Wall: "Wall",
+
+        // --- Bombs ---
+        BombStraight: "BombStraight",
+        BombZigZag: "BombZigZag",
+        BombCross: "BombCross",
+
+        // --- Shield Bricks ---
+        Brick: "Brick",
+        BrickLeft_Top0: "BrickLeft_Top0",
+        BrickLeft_Top1: "BrickLeft_Top1",
+        BrickLeft_Bottom: "BrickLeft_Bottom",
+        BrickRight_Top0: "BrickRight_Top0",
+        BrickRight_Top1: "BrickRight_Top1",
+        BrickRight_Bottom: "BrickRight_Bottom",
+
+        // --- System ---
         NullObject: "NullObject",
-        Uninitialized: "Uninitialized",
+        Uninitialized: "Uninitialized"
 
     });
 

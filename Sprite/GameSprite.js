@@ -21,6 +21,20 @@ export class GameSprite extends SpriteBase {
         Ship: "Ship",
         Wall: "Wall",
         Missile: "Missile",
+        
+        // --- NEW ENUMS ---
+        BombStraight: "BombStraight",
+        BombZigZag: "BombZigZag",
+        BombDagger: "BombDagger",
+
+        Brick: "Brick",
+        Brick_LeftTop0: "Brick_LeftTop0",
+        Brick_LeftTop1: "Brick_LeftTop1",
+        Brick_LeftBottom: "Brick_LeftBottom",
+        Brick_RightTop0: "Brick_RightTop0",
+        Brick_RightTop1: "Brick_RightTop1",
+        Brick_RightBottom: "Brick_RightBottom",
+
         NullObject: "NullObject",
         Uninitialized: "Uninitialized"
 

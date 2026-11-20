@@ -13,8 +13,8 @@ export class WallGroup extends Composite {
         }
     }
 
-    Accept(other) {
-        // Call the appropriate collision reaction            
+   Accept(other) {
+        // Call the appropriate collision reaction
         other.VisitWallGroup(this);
     }
 
@@ -25,7 +25,7 @@ export class WallGroup extends Composite {
 
     VisitGrid(a) {
         // BirdGroup vs WallGroup
-        //              go down a level in Wall Group.
+        // Go down a level in Wall Group
         const pGameObj = Iterator.GetChild(this);
         ColPair.Collide(a, pGameObj);
     }
@@ -40,5 +40,17 @@ export class WallGroup extends Composite {
         // Missile vs WallRoot
         const pGameObj = Iterator.GetChild(this);
         ColPair.Collide(m, pGameObj);
+    }
+
+    VisitBombRoot(b) {
+        // BombRoot vs WallRoot
+        const pGameObj = Iterator.GetChild(b);
+        ColPair.Collide(pGameObj, this);
+    }
+
+    VisitBomb(b) {
+        // Bomb vs WallRoot
+        const pGameObj = Iterator.GetChild(this);
+        ColPair.Collide(b, pGameObj);
     }
 }
