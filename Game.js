@@ -387,33 +387,27 @@ export default class Game extends Phaser.Scene {
         pColPair.Attach(new RemoveMissileObserver());
         pColPair.Attach(new RemoveBrickObserver());
         pColPair.Attach(new ShipReadyObserver());
-    }
 
-    update(time, delta) {
-        // Single Step, FixedStep, Realtime, Pause...
-        Simulation.Update(time / 1000);
-
-        // Input
-        InputMan.Update();
-
-        // Run based on simulation stepping
-        if (Simulation.GetTimeStep() > 0.0) {
-            // Fire off the timer events
-            TimerMan.Update(Simulation.GetTotalTime());
-
-            // Do the collision checks
-            ColPairMan.Process();
-
-            // Walk through all objects and push to flyweight
-            GameObjectMan.Update();
-
-            // Delete any objects here...
-            DelayedObjectMan.Process();
-        }
-
-        // Always draw
+        this.events.on('render', () => {
         SpriteBatchMan.Draw();
+});
     }
+
+   update(time, delta) {
+    // Single Step, FixedStep, Realtime, Pause...
+    Simulation.Update(time / 1000);
+
+    // Input
+    InputMan.Update();
+
+    // Run based on simulation stepping
+    if (Simulation.GetTimeStep() > 0.0) {
+        TimerMan.Update(Simulation.GetTotalTime());
+        ColPairMan.Process();
+        GameObjectMan.Update();
+        DelayedObjectMan.Process();
+    }
+}
 }
 
 const config = {
