@@ -101,12 +101,17 @@ export class BoxSprite extends SpriteBase {
         this.poBoxSprite.angle = this.angle;
     }
 
-    Render() {
+   Render() {
         if (!BoxSprite.ColSpriteToggel) return;
         if (!this.poBoxSprite || !this.poBoxSprite.visible) return;
 
         const renderer = activeScene.sys.renderer;
         const camera = activeScene.cameras.main;
-        this.poBoxSprite.renderWebGL(renderer, this.poBoxSprite, camera);
+
+        if (renderer.type === Phaser.WEBGL) {
+            this.poBoxSprite.renderWebGL(renderer, this.poBoxSprite, camera);
+        } else {
+            this.poBoxSprite.renderCanvas(renderer, this.poBoxSprite, camera);
+        }
     }
 }
