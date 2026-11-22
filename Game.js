@@ -3,13 +3,6 @@
 - @description The main Phaser Scene handling initialization, asset loading, and the update loop.
  */
 
-// --- FIX: INPUT HIJACKING ---
-// window.addEventListener("keydown", function (e) {
-//     if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-//         e.preventDefault();
-//     }
-// }, false);
-
 // 🚀 Barrel Import
 import {
     Simulation, TextureMan, Texture, ImageMan, Image, GameSpriteMan, GameSprite,
@@ -26,6 +19,7 @@ import {
 export default class Game extends Phaser.Scene {
     constructor() {
         super({ key: "Game" });
+        this.gameStarted = false;
     }
 
     init() {
@@ -58,6 +52,8 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
+        this.gameStarted = false;
+
         // -------------------------------------------------------------------------
         // 1. Setup Image Data
         // -------------------------------------------------------------------------
@@ -109,7 +105,7 @@ export default class Game extends Phaser.Scene {
         GameSpriteMan.Add(GameSprite.Name.SquidA, Image.Name.SquidA, Texture.Name.SpaceInvaders, 100, 532, 45, 45);
         GameSpriteMan.Add(GameSprite.Name.AlienA, Image.Name.AlienA, Texture.Name.SpaceInvaders, 100, 466, 45, 33);
         GameSpriteMan.Add(GameSprite.Name.OctopusA, Image.Name.OctopusA, Texture.Name.SpaceInvaders, 100, 400, 49, 33);
-        GameSpriteMan.Add(GameSprite.Name.PlayerShot, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 0, 0, 5, 40);
+        GameSpriteMan.Add(GameSprite.Name.PlayerShot, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 500, 900, 5, 40);
         GameSpriteMan.Add(GameSprite.Name.Ship, Image.Name.Ship, Texture.Name.SpaceInvaders, 500, 900, 80, 28);
 
         GameSpriteMan.Add(GameSprite.Name.BombZigZag, Image.Name.BombZigZag, Texture.Name.Birds, 200, 200, 20, 60);
@@ -124,7 +120,7 @@ export default class Game extends Phaser.Scene {
         GameSpriteMan.Add(GameSprite.Name.Brick_RightTop1, Image.Name.BrickRight_Top1, Texture.Name.Birds, 50, 25, 20, 10);
         GameSpriteMan.Add(GameSprite.Name.Brick_RightBottom, Image.Name.BrickRight_Bottom, Texture.Name.Birds, 50, 25, 20, 10);
 
-        GameSpriteMan.Add(GameSprite.Name.Missile, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 0, 0, 5, 40);
+        GameSpriteMan.Add(GameSprite.Name.Missile, Image.Name.PlayerShot, Texture.Name.SpaceInvaders, 500, 900, 5, 40);
 
         // -------------------------------------------------------------------------
         // 3. Create SpriteBatches
@@ -182,7 +178,7 @@ export default class Game extends Phaser.Scene {
 
         let currCol = pFirstColumn;
         for (let i = 0; i < 11; i++) {
-            const xOffset = 50.0 + (66 * i);
+            const xOffset = 118.0 + (66 * i);
             currCol.Add(AF.Create(GameObject.Name.Squid, AlienCategory.Type.Squid, xOffset, 100.0));
             currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 150.0));
             currCol.Add(AF.Create(GameObject.Name.Alien, AlienCategory.Type.Alien, xOffset, 200.0));
@@ -323,6 +319,12 @@ export default class Game extends Phaser.Scene {
             }
             this.sound.play('fastinvader2', { volume: 0 });
 
+            // Sync Simulation's internal clock cleanly while paused, then enter Realtime
+            Simulation.SetState(Simulation.State.Pause);
+            Simulation.Update(this.sys.game.loop.time / 1000);
+            Simulation.SetState(Simulation.State.Realtime);
+            this.gameStarted = true;
+
             TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Squid, 0.5);
             TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Alien, 0.5);
             TimerMan.Add(TimeEvent.Name.SpriteAnimation, pAnimSprite_Octopus, 0.5);
@@ -346,7 +348,7 @@ export default class Game extends Phaser.Scene {
         pInputSubject = InputMan.GetTSubject();
         pInputSubject.Attach(new ToggelColBox_Key_T());
 
-        Simulation.SetState(Simulation.State.Realtime);
+        Simulation.SetState(Simulation.State.Pause);
 
         const pMissileGroup = new MissileGroup(GameObject.Name.MissileGroup, GameSprite.Name.NullObject, 0.0, 0.0);
         pMissileGroup.ActivateGameSprite(pSB_Aliens);
@@ -388,26 +390,31 @@ export default class Game extends Phaser.Scene {
         pColPair.Attach(new RemoveBrickObserver());
         pColPair.Attach(new ShipReadyObserver());
 
-        this.events.on('render', () => {
-        SpriteBatchMan.Draw();
-});
-    }
-
-   update(time, delta) {
-    // Single Step, FixedStep, Realtime, Pause...
-    Simulation.Update(time / 1000);
-
-    // Input
-    InputMan.Update();
-
-    // Run based on simulation stepping
-    if (Simulation.GetTimeStep() > 0.0) {
-        TimerMan.Update(Simulation.GetTotalTime());
-        ColPairMan.Process();
+        // Sync initial sprite & collision box positions once for the start screen
         GameObjectMan.Update();
-        DelayedObjectMan.Process();
+
+        this.events.on('render', () => {
+            SpriteBatchMan.Draw();
+        });
     }
-}
+
+    update(time, delta) {
+        if (!this.gameStarted) return;
+
+        // Single Step, FixedStep, Realtime, Pause...
+        Simulation.Update(time / 1000);
+
+        // Input
+        InputMan.Update();
+
+        // Run based on simulation stepping
+        if (Simulation.GetTimeStep() > 0.0) {
+            TimerMan.Update(Simulation.GetTotalTime());
+            GameObjectMan.Update();
+            ColPairMan.Process();
+            DelayedObjectMan.Process();
+        }
+    }
 }
 
 const config = {
